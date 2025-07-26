@@ -135,7 +135,7 @@ public class MainScript : MonoBehaviour
         }
     }
 
-    void PauseGame(){
+    public void PauseGame(){
         if(gameEnd) return; // Jika game sudah berakhir, tidak perlu pause
         paused = !paused;
         if(paused)
