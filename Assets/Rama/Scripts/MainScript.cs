@@ -134,9 +134,9 @@ public class MainScript : MonoBehaviour
                             // timeRemaining = givenTime;
                         }
                     }
-                    else
+                    else // ini untuk hurufnya salah
                     {
-                        Debug.Log("huruf salah, coba lagi.");
+                        Debug.Log("huruf salah");
                     }
                 }
             }
@@ -226,6 +226,9 @@ public class MainScript : MonoBehaviour
 
         gameEnd = false;
         paused = false;
+
+        timePerChar *= 0.75f; // Kurangi waktu per karakter untuk meningkatkan kesulitan
+        if(totalDay % 3 == 0) scorePerChar++;
 
         todayScore = 0; // Reset skor hari ini
         customerIndex = 0; // Reset index customer
