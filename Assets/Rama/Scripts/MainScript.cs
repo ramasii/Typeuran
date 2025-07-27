@@ -9,14 +9,15 @@ public class MainScript : MonoBehaviour
 {
     [Header("Word Input")]
     // [SerializeField] private List<string> sentenceList = new List<string>();
-    [SerializeField] private string currSentence;
+    private string currSentence;
     // [SerializeField] private int currSentcIndex = 0;
-    [SerializeField] private int currCharIndex = 0;
+    private int currCharIndex = 0;
     [SerializeField] private TextMeshProUGUI currSentcText;
     [SerializeField] private TextMeshProUGUI inputText;
-    [SerializeField] private float timeRemaining;
+    private float timeRemaining;
     [SerializeField] private float timePerChar = 0.3f;
-    [SerializeField] private float givenTime;
+    [SerializeField] private int scorePerChar = 1;
+    private float givenTime;
     [SerializeField] private Image timerImage;
     [Header("UI References")]
     [SerializeField] private GameObject pausePanel;
@@ -24,6 +25,9 @@ public class MainScript : MonoBehaviour
     [SerializeField] private GameObject WinImg;
     [SerializeField] private GameObject LoseImg;
     [SerializeField] private GameObject sentcPanel;
+    [SerializeField] private TextMeshProUGUI totalScoreText;
+    [Header("Game Summary")]
+    private int totalScore = 0;
     [Header("Game Settings")]
     [SerializeField] private bool paused = false;
     [SerializeField] private bool gameEnd = false;
@@ -33,7 +37,7 @@ public class MainScript : MonoBehaviour
     [SerializeField] private Transform CustomerSpawnPoint;
     [Header("Customer Settings")]
     [SerializeField] private List<GameObject> customerPrefabs = new List<GameObject>();
-    [SerializeField] private int customerIndex = 0;
+    private int customerIndex = 0;
     [SerializeField] private bool customerAsking = false;
     private GameObject currentCustomer;
 
@@ -58,6 +62,7 @@ public class MainScript : MonoBehaviour
     {
         InputFromKeyboard();
         TimerUpdate();
+        UIUpdate();
 
         if(Input.GetKeyDown(KeyCode.Escape))
         {
@@ -71,12 +76,17 @@ public class MainScript : MonoBehaviour
         if (timeRemaining > 0)
         {
             timeRemaining -= Time.deltaTime;
-            timerImage.fillAmount = timeRemaining / givenTime;
         }
         else // waktu habis maka gagal
         {
             GameEnd(false);
         }
+    }
+
+    void UIUpdate()
+    {
+        totalScoreText.text = "Total Score: " + totalScore.ToString();
+        timerImage.fillAmount = timeRemaining / givenTime; // Update fill amount dari timer
     }
 
     void InputFromKeyboard(){
@@ -96,8 +106,9 @@ public class MainScript : MonoBehaviour
                     {
                         // inputText.text += inputChar; // Tambahkan karakter yang benar
                         currCharIndex++;
+                        totalScore += scorePerChar; // tambah skor
 
-                        currSentcText.text = currSentence;
+                        currSentcText.text = currSentence; 
                         inputText.text = currCharIndex == 0 ? "|" + $"<color=grey>{currSentence}</color>" : $"<color=green>{currSentence.Substring(0, currCharIndex)}</color>" + "|" + $"<color=grey>{currSentence.Substring(currCharIndex)}</color>";
 
                         if (currCharIndex >= currSentence.Length)
@@ -180,7 +191,7 @@ public class MainScript : MonoBehaviour
         string menu = menuList[Random.Range(0, menuList.Count)];
         string modifier = modifierList[Random.Range(0, modifierList.Count)];
         bool extra = Random.Range(0, 100)%2 == 0; // Random true/false untuk apakah ada extra
-        bool wio = Random.Range(0, 100)%2 == 0; // Random true/false untuk apakah ada wio
+        bool wio = Random.Range(0, 100)%2 == 0; // Random true/false untuk with/without
         string wioText = wio ? "with" : "without";
         string extraText = extra ? wioText + " " + modifier : " ";
 
@@ -198,22 +209,20 @@ public class MainScript : MonoBehaviour
         }
     }
 
-    // void NextSentence()
-    // {
-    //     if (currSentcIndex < sentenceList.Count - 1)
-    //     {
-    //         currSentcIndex++;
-    //         currSentence = sentenceList[currSentcIndex];
-    //         currSentcText.text = currSentence;
-    //         currCharIndex = 0;
-    //         inputText.text = ""; // Reset input text
-    //     }
-    //     else
-    //     {
-    //         GameEnd(); // Panggil fungsi untuk mengakhiri permainan
-    //         Debug.Log("No more words in the list.");
-    //     }
-    // }
+    public void NextDay()
+    {
+        // Implementasi logika untuk melanjutkan ke hari berikutnya
+        Debug.Log("Next Day!");
+
+        gameEnd = false;
+        paused = false;
+
+        customerIndex = 0; // Reset index customer
+        currentCustomer.GetComponent<CustomerBehaviour>().GetOut(); // Kick customer terakhir
+        Destroy(currentCustomer); // Hapus customer terakhir
+        ShuffleList(customerPrefabs); // Acak ulang urutan customer
+        StartCoroutine(DelaySpawnCustomer()); // Spawn customer pertama setelah delay
+    }
 
     void GameEnd(bool isWin = true)
     {
