@@ -15,8 +15,6 @@ public class MainScript : MonoBehaviour
     [SerializeField] private TextMeshProUGUI currSentcText;
     [SerializeField] private TextMeshProUGUI inputText;
     private float timeRemaining;
-    [SerializeField] private float timePerChar = 0.3f;
-    [SerializeField] private int scorePerChar = 1;
     private float givenTime;
     [SerializeField] private Image timerImage;
     [Header("UI References")]
@@ -26,11 +24,19 @@ public class MainScript : MonoBehaviour
     [SerializeField] private GameObject LoseImg;
     [SerializeField] private GameObject sentcPanel;
     [SerializeField] private TextMeshProUGUI totalScoreText;
+    [SerializeField] private TextMeshProUGUI todayScoreText;
+    [SerializeField] private TextMeshProUGUI totalDayText;
+    [SerializeField] private GameObject restartButton;
+    [SerializeField] private GameObject nextDayButton;
     [Header("Game Summary")]
+    private int todayScore = 0;
     private int totalScore = 0;
+    private int totalDay = 0;
     [Header("Game Settings")]
     [SerializeField] private bool paused = false;
     [SerializeField] private bool gameEnd = false;
+    [SerializeField] private float timePerChar = 0.3f;
+    [SerializeField] private int scorePerChar = 1;
     [SerializeField] private List<string> countList = new List<string>();
     [SerializeField] private List<string> menuList = new List<string>();
     [SerializeField] private List<string> modifierList = new List<string>();
@@ -45,9 +51,7 @@ public class MainScript : MonoBehaviour
     {
         // khusus debug dan testing
         ShuffleList(customerPrefabs); // Acak urutan customer
-        currentCustomer = Instantiate(customerPrefabs[customerIndex], CustomerSpawnPoint.position, Quaternion.identity); // Spawn customer pertama
-        currentCustomer.AddComponent<CustomerBehaviour>().GetIn(); // Tambahkan komponen CustomerBehaviour dan panggil GetIn
-        StartCoroutine(DelayShowSentencePanel());
+        NextCustomer(); // Spawn customer pertama
 
         currSentence = GenerateOrder(); // Ambil kalimat dari customer
         currSentcText.text = currSentence;
@@ -86,6 +90,9 @@ public class MainScript : MonoBehaviour
     void UIUpdate()
     {
         totalScoreText.text = "Total Score: " + totalScore.ToString();
+        todayScoreText.text = "Today's Score: " + todayScore.ToString();
+        totalDayText.text = "Day: " + totalDay.ToString();
+
         timerImage.fillAmount = timeRemaining / givenTime; // Update fill amount dari timer
     }
 
@@ -106,7 +113,7 @@ public class MainScript : MonoBehaviour
                     {
                         // inputText.text += inputChar; // Tambahkan karakter yang benar
                         currCharIndex++;
-                        totalScore += scorePerChar; // tambah skor
+                        todayScore += scorePerChar; // tambah skor
 
                         currSentcText.text = currSentence; 
                         inputText.text = currCharIndex == 0 ? "|" + $"<color=grey>{currSentence}</color>" : $"<color=green>{currSentence.Substring(0, currCharIndex)}</color>" + "|" + $"<color=grey>{currSentence.Substring(currCharIndex)}</color>";
@@ -138,12 +145,14 @@ public class MainScript : MonoBehaviour
 
     void NextCustomer()
     {
-        if (customerIndex < customerPrefabs.Count - 1)
+        if (customerIndex < customerPrefabs.Count)
         {
-            customerIndex++;
+            if(currentCustomer) Destroy(currentCustomer); // Hapus customer sebelumnya
+
             currentCustomer = Instantiate(customerPrefabs[customerIndex], CustomerSpawnPoint.position, Quaternion.identity); // Spawn customer berikutnya
             currentCustomer.AddComponent<CustomerBehaviour>().GetIn(); // Tambahkan komponen CustomerBehaviour dan masukkan (apanya? 🤨)
 
+            customerIndex++;
             StartCoroutine(DelayShowSentencePanel());
         }
         else
@@ -213,10 +222,12 @@ public class MainScript : MonoBehaviour
     {
         // Implementasi logika untuk melanjutkan ke hari berikutnya
         Debug.Log("Next Day!");
+        gameOverPanel.SetActive(false); // Sembunyikan panel game over
 
         gameEnd = false;
         paused = false;
 
+        todayScore = 0; // Reset skor hari ini
         customerIndex = 0; // Reset index customer
         currentCustomer.GetComponent<CustomerBehaviour>().GetOut(); // Kick customer terakhir
         Destroy(currentCustomer); // Hapus customer terakhir
@@ -233,11 +244,20 @@ public class MainScript : MonoBehaviour
         gameOverPanel.SetActive(true);
         if (isWin)
         {
+            totalDay++; // Tambah hari
+            totalScore += todayScore; // Tambah total skor
+
             WinImg.SetActive(true);
+            LoseImg.SetActive(false);
+            nextDayButton.SetActive(true);
+            restartButton.SetActive(false);
         }
         else
         {
+            WinImg.SetActive(false);
             LoseImg.SetActive(true);
+            nextDayButton.SetActive(false);
+            restartButton.SetActive(true);
         }
     }
 
