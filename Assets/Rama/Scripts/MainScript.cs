@@ -14,7 +14,7 @@ public class MainScript : MonoBehaviour
     private int currCharIndex = 0;
     [SerializeField] private TextMeshProUGUI currSentcText;
     [SerializeField] private TextMeshProUGUI inputText;
-    private float timeRemaining;
+    private float timeRemaining = 1; // jangan diubah jadi 0, nanti gamenya langsung tamat x_X
     private float givenTime;
     [SerializeField] private Image timerImage;
     [Header("UI References")]
@@ -28,10 +28,16 @@ public class MainScript : MonoBehaviour
     [SerializeField] private TextMeshProUGUI totalDayText;
     [SerializeField] private GameObject restartButton;
     [SerializeField] private GameObject nextDayButton;
+    [SerializeField] private TextMeshProUGUI totalCustomerText;
+    [SerializeField] private TextMeshProUGUI todayCustomerText;
+    [SerializeField] private TextMeshProUGUI hpText;
     [Header("Game Summary")]
     private int todayScore = 0;
     private int totalScore = 0;
     private int totalDay = 0;
+    private int totalCustomer = 0;
+    private int todayCustomer = 0;
+    [SerializeField] private int hp = 3;
     [Header("Game Settings")]
     [SerializeField] private bool paused = false;
     [SerializeField] private bool gameEnd = false;
@@ -81,9 +87,22 @@ public class MainScript : MonoBehaviour
         {
             timeRemaining -= Time.deltaTime;
         }
-        else // waktu habis maka gagal
+        else // waktu habis maka kasih penalty atau bahkan gagal
         {
-            GameEnd(false);
+            hp--; // Kurangi HP
+            ShowSentencePanel(false); // Sembunyikan panel kalimat
+            currCharIndex = 0; // Reset index karakter
+            inputText.text = ""; // Kosongkan teks kalimat
+
+            if( hp > 0)
+            {
+                Debug.Log("Waktu habis! HP tersisa: " + hp);
+                StartCoroutine(DelaySpawnCustomer()); // Spawn customer berikutnya setelah delay
+            }
+            else
+            {
+                GameEnd(false); // Panggil fungsi GameEnd dengan isWin = false
+            }
         }
     }
 
@@ -94,6 +113,11 @@ public class MainScript : MonoBehaviour
         totalDayText.text = "Day: " + totalDay.ToString();
 
         timerImage.fillAmount = timeRemaining / givenTime; // Update fill amount dari timer
+
+        totalCustomerText.text = "Total Customers: " + totalCustomer.ToString();
+        todayCustomerText.text = "Today's Customers: " + todayCustomer.ToString() + " / " + customerPrefabs.Count.ToString();
+
+        hpText.text = "HP: " + hp.ToString();
     }
 
     void InputFromKeyboard(){
@@ -120,14 +144,15 @@ public class MainScript : MonoBehaviour
 
                         if (currCharIndex >= currSentence.Length)
                         {
-                            Debug.Log("Kata selesai: " + currSentence);
+                            Debug.Log("Kalimat selesai: " + currSentence);
 
                             currCharIndex = 0; // Reset index karakter
                             inputText.text = ""; // Kosongkan teks kalimat
+                            todayCustomer++; // Tambah customer hari ini
                             
-                            // NextSentence(); // Pindah ke kalimat berikutnya
                             ShowSentencePanel(false); // Sembunyikan panel kalimat
-                            currentCustomer.GetComponent<CustomerBehaviour>().GetOut(); // kick pada customer sebelumnya >:3
+
+                            // ini cara panggil nextCustomer dengan rapih
                             StartCoroutine(DelaySpawnCustomer()); // Spawn customer berikutnya setelah delay
 
                             // givenTime = timeRemaining + currSentence.Length * timePerChar;
@@ -169,6 +194,7 @@ public class MainScript : MonoBehaviour
     }
 
     IEnumerator DelaySpawnCustomer(){
+        currentCustomer.GetComponent<CustomerBehaviour>().GetOut(); // kick pada customer sebelumnya >:3
         yield return new WaitForSeconds(2f);
         NextCustomer(); // Spawn customer berikutnya
     }
@@ -231,6 +257,8 @@ public class MainScript : MonoBehaviour
         if(totalDay % 3 == 0) scorePerChar++;
 
         todayScore = 0; // Reset skor hari ini
+        todayCustomer = 0; // Reset jumlah customer hari ini
+
         customerIndex = 0; // Reset index customer
         currentCustomer.GetComponent<CustomerBehaviour>().GetOut(); // Kick customer terakhir
         Destroy(currentCustomer); // Hapus customer terakhir
@@ -249,6 +277,7 @@ public class MainScript : MonoBehaviour
         {
             totalDay++; // Tambah hari
             totalScore += todayScore; // Tambah total skor
+            totalCustomer += todayCustomer; // Tambah total customer meskipun kalah
 
             WinImg.SetActive(true);
             LoseImg.SetActive(false);
@@ -257,6 +286,9 @@ public class MainScript : MonoBehaviour
         }
         else
         {
+            totalScore += todayScore; // Tambah total skor meskipun kalah
+            totalCustomer += todayCustomer; // Tambah total customer meskipun kalah
+
             WinImg.SetActive(false);
             LoseImg.SetActive(true);
             nextDayButton.SetActive(false);
