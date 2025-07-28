@@ -15,7 +15,7 @@ public class MainScript : MonoBehaviour
     [SerializeField] private TextMeshProUGUI currSentcText;
     [SerializeField] private TextMeshProUGUI inputText;
     private float timeRemaining = 1; // jangan diubah jadi 0, nanti gamenya langsung tamat x_X
-    private float givenTime;
+    private float givenTime = 1; // jangan diubah jadi 0, nanti gamenya langsung tamat x_X
     [SerializeField] private Image timerImage;
     [Header("UI References")]
     [SerializeField] private GameObject pausePanel;
@@ -31,12 +31,20 @@ public class MainScript : MonoBehaviour
     [SerializeField] private TextMeshProUGUI totalCustomerText;
     [SerializeField] private TextMeshProUGUI todayCustomerText;
     [SerializeField] private TextMeshProUGUI hpText;
+    [SerializeField] private TextMeshProUGUI todayHappyText;
+    [SerializeField] private TextMeshProUGUI todayNeutralText;
+    [SerializeField] private TextMeshProUGUI todayUpsetText;
+    [SerializeField] private TextMeshProUGUI todayFailedOrderText;
+    [SerializeField] private TextMeshProUGUI totalFailedOrderText;
     [Header("Game Summary")]
     private int todayScore = 0;
     private int totalScore = 0;
     private int totalDay = 0;
     private int totalCustomer = 0;
     private int todayCustomer = 0;
+    private List<int> todayState = new List<int>();
+    private int todayFailedOrder = 0;
+    private int totalFailedOrder = 0;
     [SerializeField] private int hp = 3;
     [Header("Game Settings")]
     [SerializeField] private bool paused = false;
@@ -47,10 +55,15 @@ public class MainScript : MonoBehaviour
     [SerializeField] private List<string> menuList = new List<string>();
     [SerializeField] private List<string> modifierList = new List<string>();
     [SerializeField] private Transform CustomerSpawnPoint;
+    public string customerSpriteFolder;
     [Header("Customer Settings")]
     [SerializeField] private List<GameObject> customerPrefabs = new List<GameObject>();
     private int customerIndex = 0;
     [SerializeField] private bool customerAsking = false;
+    [Range(0f, 1f)]
+    public float happyThreshold = 0.75f; // Threshold untuk customer bahagia
+    [Range(0f, 1f)]
+    public float neutralThreshold = 0.25f;
     private GameObject currentCustomer;
 
     void Start()
@@ -65,6 +78,10 @@ public class MainScript : MonoBehaviour
         givenTime = currSentence.Length * timePerChar; 
         timeRemaining = givenTime; 
         sentcPanel.GetComponent<CanvasGroup>().alpha = 0f; // Sembunyikan panel kalimat
+
+        todayState.Add(0); // Inisialisasi totalState dengan 0
+        todayState.Add(0); // Inisialisasi totalState dengan 0
+        todayState.Add(0); // Inisialisasi totalState dengan 0
         // akhir debug dan testing
     }
 
@@ -94,9 +111,12 @@ public class MainScript : MonoBehaviour
             currCharIndex = 0; // Reset index karakter
             inputText.text = ""; // Kosongkan teks kalimat
 
+            todayFailedOrder++; // Tambah jumlah order gagal hari ini
+
             if( hp > 0)
             {
                 Debug.Log("Waktu habis! HP tersisa: " + hp);
+                
                 StartCoroutine(DelaySpawnCustomer()); // Spawn customer berikutnya setelah delay
             }
             else
@@ -118,6 +138,13 @@ public class MainScript : MonoBehaviour
         todayCustomerText.text = "Today's Customers: " + todayCustomer.ToString() + " / " + customerPrefabs.Count.ToString();
 
         hpText.text = "HP: " + hp.ToString();
+
+        todayHappyText.text = "Today Happy: " + todayState[0].ToString();
+        todayNeutralText.text = "Today Neutral: " + todayState[1].ToString();
+        todayUpsetText.text = "Today Upset: " + todayState[2].ToString();
+
+        todayFailedOrderText.text = "Failed Orders: " + todayFailedOrder.ToString();
+        totalFailedOrderText.text = "Total Failed Orders: " + totalFailedOrder.ToString();
     }
 
     void InputFromKeyboard(){
@@ -152,6 +179,8 @@ public class MainScript : MonoBehaviour
                             
                             ShowSentencePanel(false); // Sembunyikan panel kalimat
 
+                            todayState[currentCustomer.GetComponent<CustomerBehaviour>().customerState]++; // Tambah total state sesuai dengan state customer
+
                             // ini cara panggil nextCustomer dengan rapih
                             StartCoroutine(DelaySpawnCustomer()); // Spawn customer berikutnya setelah delay
 
@@ -173,6 +202,9 @@ public class MainScript : MonoBehaviour
         if (customerIndex < customerPrefabs.Count)
         {
             if(currentCustomer) Destroy(currentCustomer); // Hapus customer sebelumnya
+
+            givenTime = 1;
+            timeRemaining = givenTime;
 
             currentCustomer = Instantiate(customerPrefabs[customerIndex], CustomerSpawnPoint.position, Quaternion.identity); // Spawn customer berikutnya
             currentCustomer.AddComponent<CustomerBehaviour>().GetIn(); // Tambahkan komponen CustomerBehaviour dan masukkan (apanya? 🤨)
@@ -259,6 +291,12 @@ public class MainScript : MonoBehaviour
         todayScore = 0; // Reset skor hari ini
         todayCustomer = 0; // Reset jumlah customer hari ini
 
+        todayFailedOrder = 0; // Reset jumlah order gagal hari ini
+
+        todayState[0] = 0; // Reset total state happy
+        todayState[1] = 0; // Reset total state neutral
+        todayState[2] = 0; // Reset total state upset
+
         customerIndex = 0; // Reset index customer
         currentCustomer.GetComponent<CustomerBehaviour>().GetOut(); // Kick customer terakhir
         Destroy(currentCustomer); // Hapus customer terakhir
@@ -271,13 +309,16 @@ public class MainScript : MonoBehaviour
         Debug.Log("Game Over! You have completed all sentences.");
         paused = true; // Set game to paused state
         gameEnd = true; // Set game end state
+
+        totalScore += todayScore; // Tambah total skor meskipun kalah
+        totalCustomer += todayCustomer; // Tambah total customer meskipun kalah
+        totalFailedOrder += todayFailedOrder; // Tambah total order gagal
+
         // Implement game over logic here, such as showing a UI panel or restarting the game
         gameOverPanel.SetActive(true);
         if (isWin)
         {
             totalDay++; // Tambah hari
-            totalScore += todayScore; // Tambah total skor
-            totalCustomer += todayCustomer; // Tambah total customer meskipun kalah
 
             WinImg.SetActive(true);
             LoseImg.SetActive(false);
@@ -286,9 +327,6 @@ public class MainScript : MonoBehaviour
         }
         else
         {
-            totalScore += todayScore; // Tambah total skor meskipun kalah
-            totalCustomer += todayCustomer; // Tambah total customer meskipun kalah
-
             WinImg.SetActive(false);
             LoseImg.SetActive(true);
             nextDayButton.SetActive(false);
@@ -308,15 +346,57 @@ public class MainScript : MonoBehaviour
             pausePanel.SetActive(false); 
         }
     }
+
+    public float GetTimeRemaining(bool percent = false)
+    {
+        return percent ? (timeRemaining / givenTime) : timeRemaining;
+    }
 }
 
 public class CustomerBehaviour : MonoBehaviour
 {
     [SerializeField] private Animator customerAnimator;
+    [SerializeField] private SpriteRenderer customerSprite;
+    private MainScript mainScript;
+    private string customerName;
+    public int customerState = 0; // 0: happy, 1: neutral, 2: upset
 
     void Awake()
     {
         customerAnimator = GetComponent<Animator>();
+        customerSprite = GetComponent<SpriteRenderer>();
+        mainScript = FindObjectOfType<MainScript>();
+        customerName = gameObject.name; // Ambil nama customer dari GameObject
+    }
+
+    void Update()
+    {
+        if(mainScript == null) return; // Jika mainScript belum diinisialisasi, keluar dari update
+
+        if (mainScript.GetTimeRemaining(true) > mainScript.happyThreshold){
+            customerState = 0; // Happy
+            customerSprite.sprite = GetCustomerImage("happy");
+        }else if(mainScript.GetTimeRemaining(true) > mainScript.neutralThreshold){
+            customerState = 1; // Neutral
+            customerSprite.sprite = GetCustomerImage("neutral");
+        }else{
+            customerState = 2; // Upset
+            customerSprite.sprite = GetCustomerImage("upset");
+        }
+    }
+
+    Sprite GetCustomerImage(string s)
+    {
+        customerName = customerName.Replace("(Clone)", ""); // hapus "(Clone)" dari nama customer jika ada
+        // Ambil sprite customer berdasarkan nama
+        Sprite sprite = Resources.Load<Sprite>(mainScript.customerSpriteFolder + "/" + customerName + "-" + s);
+
+        if (sprite == null)
+        {
+            Debug.LogWarning($"Sprite {customerName} state '{s}' ga ada! Menggunakan sprite default. path: " + mainScript.customerSpriteFolder + "/" + customerName + "-" + s);
+        }
+
+        return sprite != null ? sprite : customerSprite.sprite; // Kembalikan sprite atau sprite default jika tidak ditemukan
     }
 
     public void GetOut()
