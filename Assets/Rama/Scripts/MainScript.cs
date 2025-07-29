@@ -51,10 +51,12 @@ public class MainScript : MonoBehaviour
     [SerializeField] private bool gameEnd = false;
     [SerializeField] private float timePerChar = 0.3f;
     [SerializeField] private int scorePerChar = 1;
+    [SerializeField] private float timeReductionPerDay = 0.1f; // Waktu per karakter berkurang setiap hari
     [SerializeField] private List<string> countList = new List<string>();
     [SerializeField] private List<string> menuList = new List<string>();
     [SerializeField] private List<string> modifierList = new List<string>();
     [SerializeField] private Transform CustomerSpawnPoint;
+    int tempScore = 0; // skor sementara, jika order selesai, akan ditambahkan ke todayScore
     public string customerSpriteFolder;
     [Header("Customer Settings")]
     [SerializeField] private List<GameObject> customerPrefabs = new List<GameObject>();
@@ -162,12 +164,11 @@ public class MainScript : MonoBehaviour
                 {
                     if (inputChar[0] == currSentence[currCharIndex])
                     {
-                        // inputText.text += inputChar; // Tambahkan karakter yang benar
                         currCharIndex++;
-                        todayScore += scorePerChar; // tambah skor
+                        tempScore += scorePerChar; // tambah skor
 
                         currSentcText.text = currSentence; 
-                        inputText.text = currCharIndex == 0 ? "|" + $"<color=grey>{currSentence}</color>" : $"<color=green>{currSentence.Substring(0, currCharIndex)}</color>" + "|" + $"<color=grey>{currSentence.Substring(currCharIndex)}</color>";
+                        inputText.text = currCharIndex == 0 ? $"<color=green>|</color><color=#C7C7C8>{currSentence}</color>" : $"<color=green>{currSentence.Substring(0, currCharIndex)}|</color>" + $"<color=#C7C7C8>{currSentence.Substring(currCharIndex)}</color>";
 
                         if (currCharIndex >= currSentence.Length)
                         {
@@ -180,6 +181,9 @@ public class MainScript : MonoBehaviour
                             ShowSentencePanel(false); // Sembunyikan panel kalimat
 
                             todayState[currentCustomer.GetComponent<CustomerBehaviour>().customerState]++; // Tambah total state sesuai dengan state customer
+
+                            todayScore += tempScore; // Tambahkan skor sementara ke skor hari ini
+                            tempScore = 0; // Reset skor sementara
 
                             // ini cara panggil nextCustomer dengan rapih
                             StartCoroutine(DelaySpawnCustomer()); // Spawn customer berikutnya setelah delay
@@ -241,7 +245,7 @@ public class MainScript : MonoBehaviour
             currSentence = GenerateOrder(); // Ambil kalimat dari customer berikutnya
             currSentcText.text = currSentence;
             currCharIndex = 0;
-            inputText.text = "|" + $"<color=grey>{currSentence}</color>"; // Reset input text
+            inputText.text = $"<color=green>|</color><color=#C7C7C8>{currSentence}</color>"; // Reset input text
             givenTime = timeRemaining + currSentence.Length * timePerChar;
             timeRemaining = givenTime;
         }
@@ -285,7 +289,7 @@ public class MainScript : MonoBehaviour
         gameEnd = false;
         paused = false;
 
-        timePerChar *= 0.75f; // Kurangi waktu per karakter untuk meningkatkan kesulitan
+        timePerChar -= timePerChar * timeReductionPerDay; // Kurangi waktu per karakter untuk meningkatkan kesulitan
         if(totalDay % 3 == 0) scorePerChar++;
 
         todayScore = 0; // Reset skor hari ini
