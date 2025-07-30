@@ -290,8 +290,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -825.34, y: 230}
-  m_SizeDelta: {x: 232.27, y: 102.02}
+  m_AnchoredPosition: {x: -844.1, y: 349.16}
+  m_SizeDelta: {x: 194.75, y: 55.45}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &131553775
 MonoBehaviour:
@@ -342,8 +342,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 48.86
-  m_fontSizeBase: 48.86
+  m_fontSize: 38.85
+  m_fontSizeBase: 38.85
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -595,6 +595,7 @@ MonoBehaviour:
   - burger
   - fried chicken
   - salted caramel gelato
+  - chiken noodle
   modifierList:
   - sugar
   - cheese
@@ -605,10 +606,10 @@ MonoBehaviour:
   - ketchup
   - chili sauce
   CustomerSpawnPoint: {fileID: 2085256043}
-  customerSpriteFolder: Testing Art
+  customerSpriteFolder: Finish Art
   customerPrefabs:
-  - {fileID: 2698472613235107020, guid: 321822d15c1e83547a9e505309b6cd46, type: 3}
-  - {fileID: 3954576621282121156, guid: 92ab4bb12d833c3418233ebbe99e55db, type: 3}
+  - {fileID: 102944413110131949, guid: 7a9451a6e6c50d3468c9cc4d1482ade1, type: 3}
+  - {fileID: 3591560481237430595, guid: 9fa719dfd7a72d443811a9216747a616, type: 3}
   customerAsking: 1
   happyThreshold: 0.65
   neutralThreshold: 0.2
@@ -870,8 +871,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -680.36, y: 131}
-  m_SizeDelta: {x: 522.23, y: 102.02}
+  m_AnchoredPosition: {x: -722.54, y: 295.35}
+  m_SizeDelta: {x: 437.89, y: 55.45}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &417589468
 MonoBehaviour:
@@ -922,8 +923,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 48.86
-  m_fontSizeBase: 48.86
+  m_fontSize: 38.85
+  m_fontSizeBase: 38.85
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -1949,8 +1950,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.00024414062, y: 420}
-  m_SizeDelta: {x: -841.05, y: -953.96}
+  m_AnchoredPosition: {x: -88.99991, y: 356}
+  m_SizeDelta: {x: -932.84, y: -964.68}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &898630497
 MonoBehaviour:
@@ -3162,8 +3163,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -699, y: 440}
-  m_SizeDelta: {x: 484.95, y: 102.02}
+  m_AnchoredPosition: {x: -738.17, y: 463.29}
+  m_SizeDelta: {x: 406.63, y: 55.45}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1463397238
 MonoBehaviour:
@@ -3212,8 +3213,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 48.86
-  m_fontSizeBase: 48.86
+  m_fontSize: 38.85
+  m_fontSizeBase: 38.85
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -3862,8 +3863,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 48.86
-  m_fontSizeBase: 48.86
+  m_fontSize: 38.85
+  m_fontSizeBase: 38.85
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -3928,8 +3929,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -636.87, y: 336}
-  m_SizeDelta: {x: 609.22, y: 102.02}
+  m_AnchoredPosition: {x: -686.07, y: 406.76}
+  m_SizeDelta: {x: 510.82, y: 55.45}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1750079782
 GameObject:
@@ -4974,7 +4975,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2085256043}
   m_Layer: 0
-  m_Name: Customer Span Point
+  m_Name: CustomerSpawnPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4989,7 +4990,7 @@ Transform:
   m_GameObject: {fileID: 2085256042}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 3.75, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

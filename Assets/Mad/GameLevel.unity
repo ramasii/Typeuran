@@ -595,7 +595,7 @@ MonoBehaviour:
   - burger
   - fried chicken
   - salted caramel gelato
-  - chiken noodle
+  - chicken noodle
   modifierList:
   - sugar
   - cheese
@@ -1950,7 +1950,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -88.99994, y: 356}
+  m_AnchoredPosition: {x: -88.99991, y: 356}
   m_SizeDelta: {x: -932.84, y: -964.68}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &898630497

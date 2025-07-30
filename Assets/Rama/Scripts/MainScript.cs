@@ -379,7 +379,7 @@ public class CustomerBehaviour : MonoBehaviour
 
         if (mainScript.GetTimeRemaining(true) > mainScript.happyThreshold){
             customerState = 0; // Happy
-            customerSprite.sprite = GetCustomerImage("happy");
+            // customerSprite.sprite = GetCustomerImage("happy");
         }else if(mainScript.GetTimeRemaining(true) > mainScript.neutralThreshold){
             customerState = 1; // Neutral
             customerSprite.sprite = GetCustomerImage("neutral");
@@ -405,6 +405,11 @@ public class CustomerBehaviour : MonoBehaviour
 
     public void GetOut()
     {
+        if (mainScript.GetTimeRemaining(true) > mainScript.happyThreshold){
+            customerState = 0; // Happy
+            customerSprite.sprite = GetCustomerImage("happy");
+        }
+
         customerAnimator.SetTrigger("GetOut");
     }
 
