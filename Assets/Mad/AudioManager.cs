@@ -7,10 +7,25 @@ public class AudioManager : MonoBehaviour
 
     public AudioSource bgmSource;
     public AudioSource sfxSource;
+    public AudioSource sfxSourceClick;
 
     [Header("BGM Clips")]
     public AudioClip mainMenuBGM;
     public AudioClip inGameBGM;
+
+    [Header("Typing SFX")]
+    public AudioClip[] typingSFX;
+    public AudioClip spacebarSFX;
+
+    [Header("Result SFX")]
+    public AudioClip successSFX;
+    public AudioClip failSFX;
+
+    [Header("Event SFX")]
+    public AudioClip customerArrivesSFX;
+    public AudioClip dayAlmostEndedSFX;
+
+
 
     void Awake()
     {
@@ -69,5 +84,26 @@ public class AudioManager : MonoBehaviour
         {
             sfxSource.PlayOneShot(clip);
         }
+    }
+    public void PlayRandomKeyTypeSFX()
+    {
+        var clip = typingSFX[Random.Range(0, typingSFX.Length)];
+        sfxSourceClick.PlayOneShot(clip);
+    }
+    public void PlaySpacebarSFX()
+    {
+        if (spacebarSFX != null)
+            sfxSourceClick.PlayOneShot(spacebarSFX);
+    }
+    public void PlayCustomerArrivesSFX()
+    {
+        if (customerArrivesSFX != null)
+            sfxSource.PlayOneShot(customerArrivesSFX);
+    }
+
+    public void PlayDayAlmostEndedSFX()
+    {
+        if (dayAlmostEndedSFX != null)
+            sfxSource.PlayOneShot(dayAlmostEndedSFX);
     }
 }

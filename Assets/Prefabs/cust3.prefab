@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 950446235644748882}
   - component: {fileID: 2408396735138534886}
-  - component: {fileID: -7508310856215947133}
+  - component: {fileID: 1218131842097014476}
   m_Layer: 0
   m_Name: cust3
   m_TagString: Untagged
@@ -85,7 +85,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!95 &-7508310856215947133
+--- !u!95 &1218131842097014476
 Animator:
   serializedVersion: 5
   m_ObjectHideFlags: 0

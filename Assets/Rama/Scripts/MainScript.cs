@@ -72,9 +72,6 @@ public class MainScript : MonoBehaviour
     [Header("Audio")]
     [SerializeField] private AudioClip mainMenuBGM;
     [SerializeField] private AudioClip inGameBGM;
-    [SerializeField] private AudioClip successSFX;
-    [SerializeField] private AudioClip failedSFX;
-
 
     void Start()
     {
@@ -118,7 +115,7 @@ public class MainScript : MonoBehaviour
         }
         else // waktu habis maka kasih penalty atau bahkan gagal
         {
-            AudioManager.Instance.PlaySFX(failedSFX);
+            AudioManager.Instance.PlaySFX(AudioManager.Instance.failSFX);
             hp--; // Kurangi HP
             ShowSentencePanel(false); // Sembunyikan panel kalimat
             currCharIndex = 0; // Reset index karakter
@@ -175,6 +172,14 @@ public class MainScript : MonoBehaviour
                 {
                     if (inputChar[0] == currSentence[currCharIndex])
                     {
+                        if (inputChar[0] == ' ')
+                        {
+                            AudioManager.Instance.PlaySpacebarSFX();
+                        }
+                        else
+                        {
+                            AudioManager.Instance.PlayRandomKeyTypeSFX();
+                        }
                         currCharIndex++;
                         tempScore += scorePerChar; // tambah skor
 
@@ -183,7 +188,7 @@ public class MainScript : MonoBehaviour
 
                         if (currCharIndex >= currSentence.Length)
                         {
-                             AudioManager.Instance.PlaySFX(successSFX);
+                            AudioManager.Instance.PlaySFX(AudioManager.Instance.successSFX);
                             Debug.Log("Kalimat selesai: " + currSentence);
 
                             currCharIndex = 0; // Reset index karakter
@@ -226,6 +231,7 @@ public class MainScript : MonoBehaviour
             timeRemaining = givenTime;
 
             currentCustomer = Instantiate(customerPrefabs[customerIndex], CustomerSpawnPoint.position, Quaternion.identity); // Spawn customer berikutnya
+            StartCoroutine(PlayCustomerArrivesWithDelay(0.2f));
             currentCustomer.AddComponent<CustomerBehaviour>().GetIn(); // Tambahkan komponen CustomerBehaviour dan masukkan (apanya? 🤨)
 
             customerIndex++;
@@ -236,6 +242,11 @@ public class MainScript : MonoBehaviour
             GameEnd(); // Panggil fungsi untuk mengakhiri permainan
             Debug.Log("No more customers in the list.");
         }
+    }
+    private IEnumerator PlayCustomerArrivesWithDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        AudioManager.Instance.PlayCustomerArrivesSFX();
     }
 
     IEnumerator DelayShowSentencePanel()
@@ -335,6 +346,7 @@ public class MainScript : MonoBehaviour
 
         // Implement game over logic here, such as showing a UI panel or restarting the game
         gameOverPanel.SetActive(true);
+        AudioManager.Instance.PlayDayAlmostEndedSFX();
         if (isWin)
         {
             totalDay++; // Tambah hari
@@ -390,15 +402,20 @@ public class CustomerBehaviour : MonoBehaviour
 
     void Update()
     {
-        if(mainScript == null) return; // Jika mainScript belum diinisialisasi, keluar dari update
+        if (mainScript == null) return; // Jika mainScript belum diinisialisasi, keluar dari update
 
-        if (mainScript.GetTimeRemaining(true) > mainScript.happyThreshold){
+        if (mainScript.GetTimeRemaining(true) > mainScript.happyThreshold)
+        {
             customerState = 0; // Happy
             // customerSprite.sprite = GetCustomerImage("happy");
-        }else if(mainScript.GetTimeRemaining(true) > mainScript.neutralThreshold){
+        }
+        else if (mainScript.GetTimeRemaining(true) > mainScript.neutralThreshold)
+        {
             customerState = 1; // Neutral
             customerSprite.sprite = GetCustomerImage("neutral");
-        }else{
+        }
+        else
+        {
             customerState = 2; // Upset
             customerSprite.sprite = GetCustomerImage("upset");
         }
@@ -420,7 +437,8 @@ public class CustomerBehaviour : MonoBehaviour
 
     public void GetOut()
     {
-        if (mainScript.GetTimeRemaining(true) > mainScript.happyThreshold){
+        if (mainScript.GetTimeRemaining(true) > mainScript.happyThreshold)
+        {
             customerState = 0; // Happy
             customerSprite.sprite = GetCustomerImage("happy");
         }

@@ -616,6 +616,8 @@ MonoBehaviour:
   happyThreshold: 0.65
   neutralThreshold: 0.2
   customerSpawnDelay: 3
+  mainMenuBGM: {fileID: 8300000, guid: d00be7c515fa20f4ba507d978b363b59, type: 3}
+  inGameBGM: {fileID: 8300000, guid: e642a51be60603240b5139ae4fd5e15f, type: 3}
 --- !u!4 &262229787
 Transform:
   m_ObjectHideFlags: 0
@@ -1953,7 +1955,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -88.99991, y: 356}
+  m_AnchoredPosition: {x: -88.99988, y: 356}
   m_SizeDelta: {x: -932.84, y: -964.68}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &898630497

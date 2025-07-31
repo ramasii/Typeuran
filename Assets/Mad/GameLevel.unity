@@ -620,8 +620,6 @@ MonoBehaviour:
   customerSpawnDelay: 3
   mainMenuBGM: {fileID: 8300000, guid: d00be7c515fa20f4ba507d978b363b59, type: 3}
   inGameBGM: {fileID: 8300000, guid: e642a51be60603240b5139ae4fd5e15f, type: 3}
-  successSFX: {fileID: 8300000, guid: 8becd17e1f4b6574fbf57f5f1d4b6385, type: 3}
-  failedSFX: {fileID: 8300000, guid: 07708a610e5505445bf8bb505287225e, type: 3}
 --- !u!4 &262229787
 Transform:
   m_ObjectHideFlags: 0
@@ -5185,6 +5183,10 @@ PrefabInstance:
     - target: {fileID: 2409451304420472500, guid: e20d8f868e418e94fa90be4452a16279, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3842079483315432999, guid: e20d8f868e418e94fa90be4452a16279, type: 3}
+      propertyPath: m_Volume
+      value: 0.7
       objectReference: {fileID: 0}
     - target: {fileID: 7163700263167157947, guid: e20d8f868e418e94fa90be4452a16279, type: 3}
       propertyPath: m_Name
