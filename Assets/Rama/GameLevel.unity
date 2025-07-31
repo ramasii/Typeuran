@@ -595,7 +595,7 @@ MonoBehaviour:
   - burger
   - fried chicken
   - salted caramel gelato
-  - chiken noodle
+  - chicken noodle
   modifierList:
   - sugar
   - cheese
@@ -605,6 +605,8 @@ MonoBehaviour:
   - chocolate
   - ketchup
   - chili sauce
+  foodPrefabs:
+  - {fileID: 3156116400014310963, guid: 1a3a20886de59fd4e8b6ec7415e1cfba, type: 3}
   CustomerSpawnPoint: {fileID: 2085256043}
   customerSpriteFolder: Finish Art
   customerPrefabs:
@@ -613,6 +615,7 @@ MonoBehaviour:
   customerAsking: 1
   happyThreshold: 0.65
   neutralThreshold: 0.2
+  customerSpawnDelay: 3
 --- !u!4 &262229787
 Transform:
   m_ObjectHideFlags: 0

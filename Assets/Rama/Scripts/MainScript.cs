@@ -55,6 +55,7 @@ public class MainScript : MonoBehaviour
     [SerializeField] private List<string> countList = new List<string>();
     [SerializeField] private List<string> menuList = new List<string>();
     [SerializeField] private List<string> modifierList = new List<string>();
+    [SerializeField] private List<GameObject> foodPrefabs = new List<GameObject>();
     [SerializeField] private Transform CustomerSpawnPoint;
     int tempScore = 0; // skor sementara, jika order selesai, akan ditambahkan ke todayScore
     public string customerSpriteFolder;
@@ -67,6 +68,7 @@ public class MainScript : MonoBehaviour
     [Range(0f, 1f)]
     public float neutralThreshold = 0.25f;
     private GameObject currentCustomer;
+    [SerializeField] private float customerSpawnDelay = 2f; // Delay sebelum spawn customer berikutnya
 
     void Start()
     {
@@ -185,6 +187,9 @@ public class MainScript : MonoBehaviour
                             todayScore += tempScore; // Tambahkan skor sementara ke skor hari ini
                             tempScore = 0; // Reset skor sementara
 
+                            //spawn objek makanan (testing)
+                            Instantiate(foodPrefabs[0], currentCustomer.transform.position, Quaternion.identity, currentCustomer.transform); // Spawn makanan di posisi customer
+
                             // ini cara panggil nextCustomer dengan rapih
                             StartCoroutine(DelaySpawnCustomer()); // Spawn customer berikutnya setelah delay
 
@@ -231,7 +236,7 @@ public class MainScript : MonoBehaviour
 
     IEnumerator DelaySpawnCustomer(){
         currentCustomer.GetComponent<CustomerBehaviour>().GetOut(); // kick pada customer sebelumnya >:3
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(customerSpawnDelay);
         NextCustomer(); // Spawn customer berikutnya
     }
 
@@ -410,6 +415,12 @@ public class CustomerBehaviour : MonoBehaviour
             customerSprite.sprite = GetCustomerImage("happy");
         }
 
+        StartCoroutine(DelayGetOut()); // Delay sebelum customer keluar
+    }
+
+    IEnumerator DelayGetOut()
+    {
+        yield return new WaitForSeconds(1f); // Delay sebelum customer keluar
         customerAnimator.SetTrigger("GetOut");
     }
 
