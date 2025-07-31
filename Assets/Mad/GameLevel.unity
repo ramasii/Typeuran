@@ -605,14 +605,23 @@ MonoBehaviour:
   - chocolate
   - ketchup
   - chili sauce
+  foodPrefabs:
+  - {fileID: 3156116400014310963, guid: 1a3a20886de59fd4e8b6ec7415e1cfba, type: 3}
   CustomerSpawnPoint: {fileID: 2085256043}
   customerSpriteFolder: Finish Art
   customerPrefabs:
+  - {fileID: 1248212078872903432, guid: 25473ee86915872479008d87d6adf781, type: 3}
+  - {fileID: 6816115532333465434, guid: db6536935a00b0442a28b3e8c1e5544a, type: 3}
   - {fileID: 102944413110131949, guid: 7a9451a6e6c50d3468c9cc4d1482ade1, type: 3}
   - {fileID: 3591560481237430595, guid: 9fa719dfd7a72d443811a9216747a616, type: 3}
   customerAsking: 1
   happyThreshold: 0.65
   neutralThreshold: 0.2
+  customerSpawnDelay: 3
+  mainMenuBGM: {fileID: 8300000, guid: d00be7c515fa20f4ba507d978b363b59, type: 3}
+  inGameBGM: {fileID: 8300000, guid: e642a51be60603240b5139ae4fd5e15f, type: 3}
+  successSFX: {fileID: 8300000, guid: 8becd17e1f4b6574fbf57f5f1d4b6385, type: 3}
+  failedSFX: {fileID: 8300000, guid: 07708a610e5505445bf8bb505287225e, type: 3}
 --- !u!4 &262229787
 Transform:
   m_ObjectHideFlags: 0
@@ -1950,7 +1959,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -88.99991, y: 356}
+  m_AnchoredPosition: {x: -88.99994, y: 356}
   m_SizeDelta: {x: -932.84, y: -964.68}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &898630497
@@ -5129,6 +5138,63 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2130310528}
   m_CullTransparentMesh: 1
+--- !u!1001 &1783929601374785174
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2409451304420472500, guid: e20d8f868e418e94fa90be4452a16279, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2409451304420472500, guid: e20d8f868e418e94fa90be4452a16279, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2409451304420472500, guid: e20d8f868e418e94fa90be4452a16279, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2409451304420472500, guid: e20d8f868e418e94fa90be4452a16279, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2409451304420472500, guid: e20d8f868e418e94fa90be4452a16279, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2409451304420472500, guid: e20d8f868e418e94fa90be4452a16279, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2409451304420472500, guid: e20d8f868e418e94fa90be4452a16279, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2409451304420472500, guid: e20d8f868e418e94fa90be4452a16279, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2409451304420472500, guid: e20d8f868e418e94fa90be4452a16279, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2409451304420472500, guid: e20d8f868e418e94fa90be4452a16279, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7163700263167157947, guid: e20d8f868e418e94fa90be4452a16279, type: 3}
+      propertyPath: m_Name
+      value: AudioManager
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: e20d8f868e418e94fa90be4452a16279, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -5139,3 +5205,4 @@ SceneRoots:
   - {fileID: 1750079785}
   - {fileID: 1158692392}
   - {fileID: 2085256043}
+  - {fileID: 1783929601374785174}

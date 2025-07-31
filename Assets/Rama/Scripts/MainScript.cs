@@ -69,9 +69,16 @@ public class MainScript : MonoBehaviour
     public float neutralThreshold = 0.25f;
     private GameObject currentCustomer;
     [SerializeField] private float customerSpawnDelay = 2f; // Delay sebelum spawn customer berikutnya
+    [Header("Audio")]
+    [SerializeField] private AudioClip mainMenuBGM;
+    [SerializeField] private AudioClip inGameBGM;
+    [SerializeField] private AudioClip successSFX;
+    [SerializeField] private AudioClip failedSFX;
+
 
     void Start()
     {
+        AudioManager.Instance.PlayBGM(inGameBGM);
         // khusus debug dan testing
         ShuffleList(customerPrefabs); // Acak urutan customer
         NextCustomer(); // Spawn customer pertama
@@ -88,6 +95,7 @@ public class MainScript : MonoBehaviour
         todayState.Add(0); // Inisialisasi totalState dengan 0
         // akhir debug dan testing
     }
+
 
     void Update()
     {
@@ -110,6 +118,7 @@ public class MainScript : MonoBehaviour
         }
         else // waktu habis maka kasih penalty atau bahkan gagal
         {
+            AudioManager.Instance.PlaySFX(failedSFX);
             hp--; // Kurangi HP
             ShowSentencePanel(false); // Sembunyikan panel kalimat
             currCharIndex = 0; // Reset index karakter
@@ -174,6 +183,7 @@ public class MainScript : MonoBehaviour
 
                         if (currCharIndex >= currSentence.Length)
                         {
+                             AudioManager.Instance.PlaySFX(successSFX);
                             Debug.Log("Kalimat selesai: " + currSentence);
 
                             currCharIndex = 0; // Reset index karakter
