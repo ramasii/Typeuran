@@ -14,6 +14,7 @@ public class MainScript : MonoBehaviour
     private int currCharIndex = 0;
     [SerializeField] private TextMeshProUGUI currSentcText;
     [SerializeField] private TextMeshProUGUI inputText;
+
     private float timeRemaining = 1; // jangan diubah jadi 0, nanti gamenya langsung tamat x_X
     private float givenTime = 1; // jangan diubah jadi 0, nanti gamenya langsung tamat x_X
     [SerializeField] private Image timerImage;
@@ -263,6 +264,13 @@ public class MainScript : MonoBehaviour
 
     void ShowSentencePanel(bool show = true)
     {
+        Transform bubble = sentcPanel.transform.Find("FadeInBubble");
+        if (bubble != null)
+        {
+            bubble.gameObject.SetActive(show);
+        }
+        sentcPanel.GetComponent<CanvasGroup>().alpha = show ? 1f : 0f;
+        
         if (show)
         {
             customerAsking = true;

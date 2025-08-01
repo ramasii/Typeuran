@@ -44,7 +44,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.2
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -319,6 +319,7 @@ MonoBehaviour:
   failSFX: {fileID: 8300000, guid: 07708a610e5505445bf8bb505287225e, type: 3}
   customerArrivesSFX: {fileID: 8300000, guid: 5c7961c9b86b4ca419b3e2172e154ba7, type: 3}
   dayAlmostEndedSFX: {fileID: 8300000, guid: 12647c67bc3519b49b3b87c2ae19faf5, type: 3}
+  buttonClickSFX: {fileID: 8300000, guid: 311328090720c8f41ba333507284a8dd, type: 3}
 --- !u!1 &3748811167852176006
 GameObject:
   m_ObjectHideFlags: 0

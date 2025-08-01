@@ -808,6 +808,18 @@ MonoBehaviour:
           m_StringArgument: GameLevel
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 2057597524}
+        m_TargetAssemblyTypeName: AudioManager, Assembly-CSharp
+        m_MethodName: PlayButtonClickSFX
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1985802349
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -846,6 +858,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1985802346}
   m_CullTransparentMesh: 1
+--- !u!114 &2057597524 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6807371700330890119, guid: 48ae47ebda295fa449f8c3b0f916b2e0, type: 3}
+  m_PrefabInstance: {fileID: 926825343349775489}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a630b5ecd11c6d4181b38ac56216092, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &926825343349775489
 PrefabInstance:
   m_ObjectHideFlags: 0

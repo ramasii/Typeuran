@@ -10,11 +10,11 @@ public class AudioManager : MonoBehaviour
     public AudioSource sfxSource;
     public AudioSource sfxSourceClick;
 
-    [Header("BGM Clips")]
+    [Header("BGM")]
     public AudioClip mainMenuBGM;
     public AudioClip inGameBGM;
 
-    [Header("Typing SFX")]
+    [Header("SFX mengetik")]
     public AudioClip[] typingSFX;
     public AudioClip spacebarSFX;
 
@@ -25,6 +25,7 @@ public class AudioManager : MonoBehaviour
     [Header("Event SFX")]
     public AudioClip customerArrivesSFX;
     public AudioClip dayAlmostEndedSFX;
+    public AudioClip buttonClickSFX;
 
     void Awake()
     {
@@ -34,22 +35,7 @@ public class AudioManager : MonoBehaviour
             DontDestroyOnLoad(gameObject);
             SceneManager.sceneLoaded += OnSceneLoaded;
 
-            Debug.Log("✅ AudioManager Instance Created");
-
-            // Try auto-assign if missing
-            if (sfxSourceClick == null)
-            {
-                Transform clickObj = transform.Find("SFXClick");
-                if (clickObj != null)
-                {
-                    sfxSourceClick = clickObj.GetComponent<AudioSource>();
-                    Debug.Log("✅ sfxSourceClick assigned in Awake");
-                }
-                else
-                {
-                    Debug.LogWarning("⚠️ sfxSourceClick not found in children");
-                }
-            }
+            Debug.Log("AudioManager Instance Created");
         }
         else
         {
@@ -65,39 +51,43 @@ public class AudioManager : MonoBehaviour
     }
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+{
+    // Auto BGM switch
+    switch (scene.name)
     {
-        // Auto BGM switch
-        switch (scene.name)
-        {
-            case "MainMenu":
-                PlayBGM(mainMenuBGM);
-                break;
-            case "GameLevel":
-                PlayBGM(inGameBGM);
-                break;
-        }
-
-        // Re-assign sfxSourceClick if missing or inactive
-        if (sfxSourceClick == null || !sfxSourceClick.gameObject.activeInHierarchy)
-        {
-            Debug.Log("🔁 Reassigning sfxSourceClick...");
-            var clickObj = transform.Find("SFXClick");
-            if (clickObj != null)
-            {
-                sfxSourceClick = clickObj.GetComponent<AudioSource>();
-                if (sfxSourceClick != null)
-                    Debug.Log("✅ sfxSourceClick successfully reassigned.");
-                else
-                    Debug.LogWarning("❌ sfxSourceClick AudioSource not found.");
-            }
-            else
-            {
-                Debug.LogWarning("❌ GameObject 'SFXClick' not found under AudioManager.");
-            }
-        }
+        case "MainMenu":
+            PlayBGM(mainMenuBGM);
+            break;
+        case "GameLevel":
+            PlayBGM(inGameBGM);
+            break;
     }
 
-    // ------------------- BGM -------------------
+    ReassignSFXClickSource();
+}
+
+void ReassignSFXClickSource()
+{
+    if (sfxSourceClick == null || !sfxSourceClick.gameObject.activeInHierarchy)
+    {
+        Debug.Log("🔁 Reassigning sfxSourceClick...");
+        var clickObj = transform.Find("SFXClick");
+        if (clickObj != null)
+        {
+            sfxSourceClick = clickObj.GetComponent<AudioSource>();
+            if (sfxSourceClick != null)
+                Debug.Log("✅ sfxSourceClick successfully reassigned.");
+            else
+                Debug.LogWarning("❌ sfxSourceClick AudioSource not found.");
+        }
+        else
+        {
+            Debug.LogWarning("❌ GameObject 'SFXClick' not found under AudioManager.");
+        }
+    }
+}
+
+
     public void PlayBGM(AudioClip clip)
     {
         if (clip != null && bgmSource != null && bgmSource.clip != clip)
@@ -109,25 +99,23 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    // ------------------- SFX General -------------------
     public void PlaySFX(AudioClip clip)
     {
         if (clip == null)
         {
-            Debug.LogWarning("⚠️ SFX clip is null!");
+            Debug.LogWarning("SFX clip is null!");
             return;
         }
 
         if (sfxSource == null || !sfxSource.enabled || !sfxSource.gameObject.activeInHierarchy)
         {
-            Debug.LogWarning("❌ SFX Source is not available!");
+            Debug.LogWarning("SFX Source is not available!");
             return;
         }
 
         sfxSource.PlayOneShot(clip);
     }
 
-    // ------------------- SFX Typing -------------------
     public void PlayRandomKeyTypeSFX()
     {
         if (typingSFX.Length > 0 && sfxSourceClick != null)
@@ -145,7 +133,6 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    // ------------------- SFX Events -------------------
     public void PlayCustomerArrivesSFX()
     {
         if (customerArrivesSFX != null) PlaySFX(customerArrivesSFX);
@@ -165,5 +152,12 @@ public class AudioManager : MonoBehaviour
     {
         if (failSFX != null) PlaySFX(failSFX);
     }
+    public void PlayButtonClickSFX()
+{
+    if (buttonClickSFX != null && sfxSourceClick != null)
+    {
+        sfxSourceClick.PlayOneShot(buttonClickSFX);
+    }
+}
 
 }
