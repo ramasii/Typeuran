@@ -157,7 +157,7 @@ public class MainScript : MonoBehaviour
         timerImage.fillAmount = timeRemaining / givenTime; // Update fill amount dari timer
 
         totalCustomerText.text = "Total Customers: " + totalCustomer.ToString();
-        todayCustomerText.text = "Today's Order: " + todayCustomer.ToString() + " / " + customerPrefabs.Count.ToString();
+        todayCustomerText.text = "Today's Order: " + todayCustomer.ToString();
 
         hpText.text = "HP: " + hp.ToString();
 
@@ -274,7 +274,7 @@ public class MainScript : MonoBehaviour
     }
 
     IEnumerator DelaySpawnCustomer(){
-        currentCustomer.GetComponent<CustomerBehaviour>().GetOut(); // kick pada customer sebelumnya >:3
+        if(currentCustomer) currentCustomer.GetComponent<CustomerBehaviour>().GetOut(); // kick pada customer sebelumnya >:3
         yield return new WaitForSeconds(customerSpawnDelay);
         NextCustomer(); // Spawn customer berikutnya
     }
