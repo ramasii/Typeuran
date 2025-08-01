@@ -153,11 +153,11 @@ void ReassignSFXClickSource()
         if (failSFX != null) PlaySFX(failSFX);
     }
     public void PlayButtonClickSFX()
-{
+    {
     if (buttonClickSFX != null && sfxSourceClick != null)
     {
         sfxSourceClick.PlayOneShot(buttonClickSFX);
     }
-}
+    }
 
 }

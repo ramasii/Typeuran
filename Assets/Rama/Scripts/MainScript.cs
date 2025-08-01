@@ -37,6 +37,7 @@ public class MainScript : MonoBehaviour
     [SerializeField] private TextMeshProUGUI todayUpsetText;
     [SerializeField] private TextMeshProUGUI todayFailedOrderText;
     [SerializeField] private TextMeshProUGUI totalFailedOrderText;
+    [SerializeField] private Image clockImage;
     [Header("Game Summary")]
     private int todayScore = 0;
     private int totalScore = 0;
@@ -58,6 +59,9 @@ public class MainScript : MonoBehaviour
     [SerializeField] private List<string> modifierList = new List<string>();
     [SerializeField] private List<GameObject> foodPrefabs = new List<GameObject>();
     [SerializeField] private Transform CustomerSpawnPoint;
+    [SerializeField] private float dayTime = 60f;
+    [SerializeField] private float dayTimeReductionSpeed = 1f;
+    private float tempDayTime;
     int tempScore = 0; // skor sementara, jika order selesai, akan ditambahkan ke todayScore
     public string customerSpriteFolder;
     [Header("Customer Settings")]
@@ -78,6 +82,8 @@ public class MainScript : MonoBehaviour
     {
         AudioManager.Instance.PlayBGM(inGameBGM);
         // khusus debug dan testing
+        tempDayTime = dayTime; // Simpan waktu hari ini untuk reset
+        customerAsking = false;
         ShuffleList(customerPrefabs); // Acak urutan customer
         NextCustomer(); // Spawn customer pertama
 
@@ -91,6 +97,7 @@ public class MainScript : MonoBehaviour
         todayState.Add(0); // Inisialisasi totalState dengan 0
         todayState.Add(0); // Inisialisasi totalState dengan 0
         todayState.Add(0); // Inisialisasi totalState dengan 0
+
         // akhir debug dan testing
     }
 
@@ -109,6 +116,10 @@ public class MainScript : MonoBehaviour
 
     void TimerUpdate(){
         if (paused || customerAsking == false) return; // jika game sedang pause atau ga ada customer, tidak perlu update timer
+
+        if( tempDayTime > 0){
+            tempDayTime -= Time.deltaTime * dayTimeReductionSpeed; // Kurangi waktu hari ini
+        }
 
         if (timeRemaining > 0)
         {
@@ -140,22 +151,24 @@ public class MainScript : MonoBehaviour
     void UIUpdate()
     {
         totalScoreText.text = "Total Score: " + totalScore.ToString();
-        todayScoreText.text = "Today's Score: " + todayScore.ToString();
+        todayScoreText.text = "Score: " + todayScore.ToString();
         totalDayText.text = "Day: " + totalDay.ToString();
 
         timerImage.fillAmount = timeRemaining / givenTime; // Update fill amount dari timer
 
         totalCustomerText.text = "Total Customers: " + totalCustomer.ToString();
-        todayCustomerText.text = "Today's Customers: " + todayCustomer.ToString() + " / " + customerPrefabs.Count.ToString();
+        todayCustomerText.text = "Today's Order: " + todayCustomer.ToString() + " / " + customerPrefabs.Count.ToString();
 
         hpText.text = "HP: " + hp.ToString();
 
-        todayHappyText.text = "Today Happy: " + todayState[0].ToString();
-        todayNeutralText.text = "Today Neutral: " + todayState[1].ToString();
-        todayUpsetText.text = "Today Upset: " + todayState[2].ToString();
+        todayHappyText.text = "Happy: " + todayState[0].ToString();
+        todayNeutralText.text = "Neutral: " + todayState[1].ToString();
+        todayUpsetText.text = "Upset: " + todayState[2].ToString();
 
         todayFailedOrderText.text = "Failed Orders: " + todayFailedOrder.ToString();
         totalFailedOrderText.text = "Total Failed Orders: " + totalFailedOrder.ToString();
+
+        clockImage.fillAmount = tempDayTime / dayTime; // Update fill amount dari clockImage
     }
 
     void InputFromKeyboard(){
@@ -204,7 +217,7 @@ public class MainScript : MonoBehaviour
                             tempScore = 0; // Reset skor sementara
 
                             //spawn objek makanan (testing)
-                            Instantiate(foodPrefabs[0], currentCustomer.transform.position, Quaternion.identity, currentCustomer.transform); // Spawn makanan di posisi customer
+                            Instantiate(foodPrefabs[Random.Range(0, foodPrefabs.Count)], currentCustomer.transform.position, Quaternion.identity, currentCustomer.transform); // Spawn makanan di posisi customer
 
                             // ini cara panggil nextCustomer dengan rapih
                             StartCoroutine(DelaySpawnCustomer()); // Spawn customer berikutnya setelah delay
@@ -224,19 +237,23 @@ public class MainScript : MonoBehaviour
 
     void NextCustomer()
     {
+
         if (customerIndex < customerPrefabs.Count)
         {
             if(currentCustomer) Destroy(currentCustomer); // Hapus customer sebelumnya
+            if(tempDayTime <= 0) GameEnd();
 
-            givenTime = 1;
-            timeRemaining = givenTime;
+            if(tempDayTime > 0){
+                givenTime = 1;
+                timeRemaining = givenTime;
 
-            currentCustomer = Instantiate(customerPrefabs[customerIndex], CustomerSpawnPoint.position, Quaternion.identity); // Spawn customer berikutnya
-            StartCoroutine(PlayCustomerArrivesWithDelay(1f));
-            currentCustomer.AddComponent<CustomerBehaviour>().GetIn(); // Tambahkan komponen CustomerBehaviour dan masukkan (apanya? 🤨)
+                currentCustomer = Instantiate(customerPrefabs[customerIndex], CustomerSpawnPoint.position, Quaternion.identity); // Spawn customer berikutnya
+                StartCoroutine(PlayCustomerArrivesWithDelay(1f));
+                currentCustomer.AddComponent<CustomerBehaviour>().GetIn(); // Tambahkan komponen CustomerBehaviour dan masukkan (apanya? 🤨)
 
-            customerIndex++;
-            StartCoroutine(DelayShowSentencePanel());
+                customerIndex++;
+                StartCoroutine(DelayShowSentencePanel());
+            }
         }
         else
         {
@@ -324,6 +341,7 @@ public class MainScript : MonoBehaviour
         paused = false;
 
         timePerChar -= timePerChar * timeReductionPerDay; // Kurangi waktu per karakter untuk meningkatkan kesulitan
+        dayTime -= dayTime * timeReductionPerDay; // Kurangi waktu hari ini untuk meningkatkan kesulitan
         if(totalDay % 3 == 0) scorePerChar++;
 
         todayScore = 0; // Reset skor hari ini
@@ -335,9 +353,9 @@ public class MainScript : MonoBehaviour
         todayState[1] = 0; // Reset total state neutral
         todayState[2] = 0; // Reset total state upset
 
+        tempDayTime = dayTime; // Reset waktu hari ini
+
         customerIndex = 0; // Reset index customer
-        currentCustomer.GetComponent<CustomerBehaviour>().GetOut(); // Kick customer terakhir
-        Destroy(currentCustomer); // Hapus customer terakhir
         ShuffleList(customerPrefabs); // Acak ulang urutan customer
         StartCoroutine(DelaySpawnCustomer()); // Spawn customer pertama setelah delay
     }

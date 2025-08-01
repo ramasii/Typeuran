@@ -6,9 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Mad/MainMenu.unity
-    guid: e3807737461621e4f994160ac363d1ae
+    path: Assets/Rama/MainMenu.unity
+    guid: b9b705648d18fee4095176efc919c074
   - enabled: 1
-    path: Assets/Mad/GameLevel.unity
-    guid: 0b08350db7ba03e4ba8531989dd79e4c
+    path: Assets/Rama/GameLevel.unity
+    guid: b49e04997ed5a1448ad52f9cc2f592bc
   m_configObjects: {}
