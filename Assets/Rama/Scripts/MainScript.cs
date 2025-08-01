@@ -231,7 +231,7 @@ public class MainScript : MonoBehaviour
             timeRemaining = givenTime;
 
             currentCustomer = Instantiate(customerPrefabs[customerIndex], CustomerSpawnPoint.position, Quaternion.identity); // Spawn customer berikutnya
-            StartCoroutine(PlayCustomerArrivesWithDelay(0.2f));
+            StartCoroutine(PlayCustomerArrivesWithDelay(1f));
             currentCustomer.AddComponent<CustomerBehaviour>().GetIn(); // Tambahkan komponen CustomerBehaviour dan masukkan (apanya? 🤨)
 
             customerIndex++;
