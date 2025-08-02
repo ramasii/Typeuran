@@ -85,11 +85,12 @@ public class MainScript : MonoBehaviour
         tempDayTime = dayTime; // Simpan waktu hari ini untuk reset
         customerAsking = false;
         ShuffleList(customerPrefabs); // Acak urutan customer
-        NextCustomer(); // Spawn customer pertama
+        // NextCustomer(); // Spawn customer pertama
+        StartCoroutine(DelaySpawnCustomer()); // Spawn customer berikutnya setelah delay
 
         currSentence = GenerateOrder(); // Ambil kalimat dari customer
         currSentcText.text = currSentence;
-        inputText.text = ""; // Reset input text
+        // inputText.text = ""; // Reset input text
         givenTime = currSentence.Length * timePerChar; 
         timeRemaining = givenTime; 
         sentcPanel.GetComponent<CanvasGroup>().alpha = 0f; // Sembunyikan panel kalimat
@@ -341,7 +342,7 @@ public class MainScript : MonoBehaviour
         paused = false;
 
         timePerChar -= timePerChar * timeReductionPerDay; // Kurangi waktu per karakter untuk meningkatkan kesulitan
-        dayTime -= dayTime * timeReductionPerDay; // Kurangi waktu hari ini untuk meningkatkan kesulitan
+        dayTime -= dayTime * 0.1f; // Kurangi waktu hari ini untuk meningkatkan kesulitan
         if(totalDay % 3 == 0) scorePerChar++;
 
         todayScore = 0; // Reset skor hari ini
