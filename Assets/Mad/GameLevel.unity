@@ -995,6 +995,10 @@ MonoBehaviour:
   - {fileID: 6816115532333465434, guid: db6536935a00b0442a28b3e8c1e5544a, type: 3}
   - {fileID: 102944413110131949, guid: 7a9451a6e6c50d3468c9cc4d1482ade1, type: 3}
   - {fileID: 3591560481237430595, guid: 9fa719dfd7a72d443811a9216747a616, type: 3}
+  - {fileID: 3333957397179987876, guid: d6b36402fd5e75e44b1fe9a8af8064d8, type: 3}
+  - {fileID: 5250154687272406850, guid: b8cf2476867e6724cb8eb4711d4970cf, type: 3}
+  - {fileID: 3283173980411900585, guid: e287473afc2b24c45b1a310ae072dc6f, type: 3}
+  - {fileID: 7754877203637061018, guid: f56816b99604d7c47a9553d1ae708d58, type: 3}
   customerAsking: 1
   happyThreshold: 0.65
   neutralThreshold: 0.2
