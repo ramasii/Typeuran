@@ -66,6 +66,7 @@ MonoBehaviour:
   todayFailedOrderText: {fileID: 0}
   totalFailedOrderText: {fileID: 0}
   clockImage: {fileID: 0}
+  upgradePanel: {fileID: 0}
   hp: 3
   paused: 0
   gameEnd: 0
@@ -102,15 +103,28 @@ MonoBehaviour:
   CustomerSpawnPoint: {fileID: 0}
   dayTime: 20
   dayTimeReductionSpeed: 1
+  dayPerUpgrade: 3
+  maxHP: 3
   customerSpriteFolder: Finish Art
   customerPrefabs:
   - {fileID: 1248212078872903432, guid: 25473ee86915872479008d87d6adf781, type: 3}
   - {fileID: 6816115532333465434, guid: db6536935a00b0442a28b3e8c1e5544a, type: 3}
   - {fileID: 102944413110131949, guid: 7a9451a6e6c50d3468c9cc4d1482ade1, type: 3}
   - {fileID: 3591560481237430595, guid: 9fa719dfd7a72d443811a9216747a616, type: 3}
+  - {fileID: 3333957397179987876, guid: d6b36402fd5e75e44b1fe9a8af8064d8, type: 3}
+  - {fileID: 5250154687272406850, guid: b8cf2476867e6724cb8eb4711d4970cf, type: 3}
+  - {fileID: 3283173980411900585, guid: e287473afc2b24c45b1a310ae072dc6f, type: 3}
+  - {fileID: 7754877203637061018, guid: f56816b99604d7c47a9553d1ae708d58, type: 3}
   customerAsking: 1
   happyThreshold: 0.55
   neutralThreshold: 0.2
   customerSpawnDelay: 3
+  additionalDayTime: 0
+  additionalPatience: 0
+  autoCorrectLevel: 0
+  maxAutoCorrectLevel: 2
+  autoCorrectAvailable: 0
+  autoSpaceUpgrade: 0
+  reverseModeUpgrade: 0
   mainMenuBGM: {fileID: 8300000, guid: d00be7c515fa20f4ba507d978b363b59, type: 3}
   inGameBGM: {fileID: 8300000, guid: e642a51be60603240b5139ae4fd5e15f, type: 3}

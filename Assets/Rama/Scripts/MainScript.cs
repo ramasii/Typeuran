@@ -11,9 +11,11 @@ public class MainScript : MonoBehaviour
     // [SerializeField] private List<string> sentenceList = new List<string>();
     private string currSentence;
     // [SerializeField] private int currSentcIndex = 0;
-    private int currCharIndex = 0;
+    private int currCharInSentcIndex = 0;
     [SerializeField] private TextMeshProUGUI currSentcText;
     [SerializeField] private TextMeshProUGUI inputText;
+    private List<string> currWordList = new List<string>();
+    private int currWordIndex = 0;
 
     private float timeRemaining = 1; // jangan diubah jadi 0, nanti gamenya langsung tamat x_X
     private float givenTime = 1; // jangan diubah jadi 0, nanti gamenya langsung tamat x_X
@@ -38,6 +40,7 @@ public class MainScript : MonoBehaviour
     [SerializeField] private TextMeshProUGUI todayFailedOrderText;
     [SerializeField] private TextMeshProUGUI totalFailedOrderText;
     [SerializeField] private Image clockImage;
+    [SerializeField] private GameObject upgradePanel;
     [Header("Game Summary")]
     private int todayScore = 0;
     private int totalScore = 0;
@@ -47,7 +50,7 @@ public class MainScript : MonoBehaviour
     private List<int> todayState = new List<int>();
     private int todayFailedOrder = 0;
     private int totalFailedOrder = 0;
-    [SerializeField] private int hp = 3;
+    public int hp = 3;
     [Header("Game Settings")]
     [SerializeField] private bool paused = false;
     [SerializeField] private bool gameEnd = false;
@@ -61,9 +64,12 @@ public class MainScript : MonoBehaviour
     [SerializeField] private Transform CustomerSpawnPoint;
     [SerializeField] private float dayTime = 60f;
     [SerializeField] private float dayTimeReductionSpeed = 1f;
+    [SerializeField] private int dayPerUpgrade = 3; // Setiap berapa hari upgrade bisa dilakukan
+    public int maxHP = 3;
     private float tempDayTime;
     int tempScore = 0; // skor sementara, jika order selesai, akan ditambahkan ke todayScore
     public string customerSpriteFolder;
+    private bool alreadySeeUpgradePanel = false; // untuk menghindari upgrade panel muncul terus menerus
     [Header("Customer Settings")]
     [SerializeField] private List<GameObject> customerPrefabs = new List<GameObject>();
     private int customerIndex = 0;
@@ -74,9 +80,22 @@ public class MainScript : MonoBehaviour
     public float neutralThreshold = 0.25f;
     private GameObject currentCustomer;
     [SerializeField] private float customerSpawnDelay = 2f; // Delay sebelum spawn customer berikutnya
+    [Header("Player Upgrades")]
+    public float additionalDayTime = 0f;
+    public float additionalPatience = 0f;
+    public int autoCorrectLevel = 0; // Level auto correct, semakin tinggi semakin banyak kesalahan yang bisa diperbaiki per kata
+    public int maxAutoCorrectLevel = 2;
+    public int autoCorrectAvailable = 0;
+    public bool autoSpaceUpgrade = false;
+    public bool reverseModeUpgrade = false;
+    private string targetReversedWord = ""; // Untuk menyimpan kata yang sedang diketik
+    private string targetWord = ""; // Untuk menyimpan kata target yang harus diketik
+    private int currCharInWordIndex = 0; // Untuk menyimpan index karakter dalam kata yang sedang diketik
+    private string typedReversedWord = ""; // Untuk menyimpan kata yang sudah diketik dalam reverse mode
+    private int addReversedProgress = 0; // Untuk menyimpan jumlah karakter yang sudah ditambahkan dalam reverse mode
     [Header("Audio")]
-    [SerializeField] private AudioClip mainMenuBGM;
-    [SerializeField] private AudioClip inGameBGM;
+    public AudioClip mainMenuBGM;
+    public AudioClip inGameBGM;
 
     void Start()
     {
@@ -90,9 +109,12 @@ public class MainScript : MonoBehaviour
 
         currSentence = GenerateOrder(); // Ambil kalimat dari customer
         currSentcText.text = currSentence;
+        currWordList = currSentence.Split(' ').ToList(); // Pisahkan kalimat menjadi kata-kata
+        autoCorrectAvailable = autoCorrectLevel; // Set jumlah auto correct yang tersedia sesuai level
         // inputText.text = ""; // Reset input text
-        givenTime = currSentence.Length * timePerChar; 
-        timeRemaining = givenTime; 
+        givenTime = currSentence.Length * timePerChar;
+        givenTime += givenTime * additionalPatience; // Tambahkan waktu ekstra berdasarkan tambahan kesabaran
+        timeRemaining = givenTime;
         sentcPanel.GetComponent<CanvasGroup>().alpha = 0f; // Sembunyikan panel kalimat
 
         todayState.Add(0); // Inisialisasi totalState dengan 0
@@ -109,16 +131,18 @@ public class MainScript : MonoBehaviour
         TimerUpdate();
         UIUpdate();
 
-        if(Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
             PauseGame(); // Toggle pause state when Escape is pressed
         }
     }
 
-    void TimerUpdate(){
+    void TimerUpdate()
+    {
         if (paused || customerAsking == false) return; // jika game sedang pause atau ga ada customer, tidak perlu update timer
 
-        if( tempDayTime > 0){
+        if (tempDayTime > 0)
+        {
             tempDayTime -= Time.deltaTime * dayTimeReductionSpeed; // Kurangi waktu hari ini
         }
 
@@ -131,15 +155,15 @@ public class MainScript : MonoBehaviour
             AudioManager.Instance.PlaySFX(AudioManager.Instance.failSFX);
             hp--; // Kurangi HP
             ShowSentencePanel(false); // Sembunyikan panel kalimat
-            currCharIndex = 0; // Reset index karakter
+            currCharInSentcIndex = 0; // Reset index karakter
             inputText.text = ""; // Kosongkan teks kalimat
 
             todayFailedOrder++; // Tambah jumlah order gagal hari ini
 
-            if( hp > 0)
+            if (hp > 0)
             {
                 Debug.Log("Waktu habis! HP tersisa: " + hp);
-                
+
                 StartCoroutine(DelaySpawnCustomer()); // Spawn customer berikutnya setelah delay
             }
             else
@@ -172,10 +196,12 @@ public class MainScript : MonoBehaviour
         clockImage.fillAmount = tempDayTime / dayTime; // Update fill amount dari clockImage
     }
 
-    void InputFromKeyboard(){
+    void InputFromKeyboard()
+    {
         if (paused) return; // jika game sedang pause, tidak perlu input
 
-        if(Input.anyKeyDown){
+        if (Input.anyKeyDown)
+        {
             string inputChar = new string(Input.inputString
                 .Where(c => char.IsLetter(c) || c == ' ') // filter khusus huruf dan spasi
                 .ToArray()) // gabung char menjadi string
@@ -183,57 +209,169 @@ public class MainScript : MonoBehaviour
 
             if (inputChar.Length > 0)
             {
-                if (currCharIndex < currSentence.Length)
+                if (currCharInSentcIndex < currSentence.Length)
                 {
-                    if (inputChar[0] == currSentence[currCharIndex])
+                    if (inputChar[0] == currSentence[currCharInSentcIndex])
                     {
                         if (inputChar[0] == ' ')
                         {
                             AudioManager.Instance.PlaySpacebarSFX();
+                            autoCorrectAvailable = autoCorrectLevel; // Reset jumlah auto correct 
+                            currWordIndex++; // Pindah ke kata berikutnya
+                            addReversedProgress = 0; // Reset jumlah karakter yang sudah ditambahkan dalam reverse mode
+                            currCharInWordIndex = 0; // Reset index karakter dalam kata yang sedang diketik
+                            Debug.Log("current word " + currWordList[currWordIndex]);
                         }
                         else
                         {
                             AudioManager.Instance.PlayRandomKeyTypeSFX();
                         }
-                        currCharIndex++;
+
+                        currCharInSentcIndex++;
+                        addReversedProgress = addReversedProgress > 0 ? addReversedProgress - 1 : 0; ;
                         tempScore += scorePerChar; // tambah skor
 
-                        currSentcText.text = currSentence; 
-                        inputText.text = currCharIndex == 0 ? $"<color=green>|</color><color=#C7C7C8>{currSentence}</color>" : $"<color=green>{currSentence.Substring(0, currCharIndex)}|</color>" + $"<color=#C7C7C8>{currSentence.Substring(currCharIndex)}</color>";
+                        if (inputChar[0] != ' ') currCharInWordIndex++; // Tambah index karakter dalam kata yang sedang diketik
 
-                        if (currCharIndex >= currSentence.Length)
+                        ReverseMode(inputChar); // Cek reverse mode
+
+                        if (currCharInSentcIndex < currSentence.Length)
+                        { // jika masih ada karakter berikutnya
+                            if (autoSpaceUpgrade && currSentence[currCharInSentcIndex] == ' ')
+                            {
+                                currCharInSentcIndex++; // jika auto space, langsung skip spasi
+                                tempScore += scorePerChar; // tambah skor
+                                autoCorrectAvailable = autoCorrectLevel; // Reset jumlah auto correct
+                                currWordIndex++;
+                                addReversedProgress = 0; // Reset jumlah karakter yang sudah ditambahkan dalam reverse mode
+                                currCharInWordIndex = 0; // Reset index karakter dalam kata yang sedang diketik
+                                Debug.Log("current word " + currWordList[currWordIndex]);
+                            }
+                        }
+
+                        inputText.text = currCharInSentcIndex == 0 ? $"<color=green>|</color><color=#C7C7C8>{currSentence}</color>" : $"<color=green>{currSentence.Substring(0, currCharInSentcIndex)}|</color>" + $"<color=#C7C7C8>{currSentence.Substring(currCharInSentcIndex)}</color>";
+
+                        if (currCharInSentcIndex >= currSentence.Length)
                         {
-                            AudioManager.Instance.PlaySFX(AudioManager.Instance.successSFX);
-                            Debug.Log("Kalimat selesai: " + currSentence);
-
-                            currCharIndex = 0; // Reset index karakter
-                            inputText.text = ""; // Kosongkan teks kalimat
-                            todayCustomer++; // Tambah customer hari ini
-                            
-                            ShowSentencePanel(false); // Sembunyikan panel kalimat
-
-                            todayState[currentCustomer.GetComponent<CustomerBehaviour>().customerState]++; // Tambah total state sesuai dengan state customer
-
-                            todayScore += tempScore; // Tambahkan skor sementara ke skor hari ini
-                            tempScore = 0; // Reset skor sementara
-
-                            //spawn objek makanan (testing)
-                            Instantiate(foodPrefabs[Random.Range(0, foodPrefabs.Count)], currentCustomer.transform.position, Quaternion.identity, currentCustomer.transform); // Spawn makanan di posisi customer
-
-                            // ini cara panggil nextCustomer dengan rapih
-                            StartCoroutine(DelaySpawnCustomer()); // Spawn customer berikutnya setelah delay
-
-                            // givenTime = timeRemaining + currSentence.Length * timePerChar;
-                            // timeRemaining = givenTime;
+                            OrderCompleted();
                         }
                     }
-                    else // ini untuk hurufnya salah
+                    else // ini untuk hurufnya salah, sekaligus pengecekan auto correct dan reverse mode
                     {
-                        Debug.Log("huruf salah");
+                        ReverseMode(inputChar); // Cek reverse mode
+
+                        // jika auto correct tersedia dan karakter yang salah bukan spasi maka perbaiki
+                        if (autoCorrectAvailable > 0 && currSentence[currCharInSentcIndex] != ' ')
+                        {
+                            autoCorrectAvailable--; // Kurangi jumlah auto correct yang tersedia
+                            currCharInSentcIndex++; // Lewati karakter yang salah
+                            currCharInWordIndex++; // Tambah index karakter dalam kata yang sedang diketik
+                            addReversedProgress = addReversedProgress > 0 ? addReversedProgress - 1 : 0; // Kurangi jumlah karakter yang sudah ditambahkan dalam reverse mode
+                            inputText.text = $"<color=green>{currSentence.Substring(0, currCharInSentcIndex)}|</color>" + $"<color=#C7C7C8>{currSentence.Substring(currCharInSentcIndex)}</color>";
+                            // AudioManager.Instance.PlayAutoCorrectSFX(); // Mainkan efek suara auto correct
+                            Debug.Log("Huruf salah, tapi auto correct berhasil memperbaiki!");
+                        }
+                        else
+                        {
+                            Debug.Log("huruf salah");
+                        }
                     }
                 }
             }
         }
+    }
+
+    private void OrderCompleted()
+    {
+        AudioManager.Instance.PlaySFX(AudioManager.Instance.successSFX);
+        Debug.Log("Kalimat selesai: " + currSentence);
+
+        currCharInSentcIndex = 0; // Reset index karakter
+        inputText.text = ""; // Kosongkan teks kalimat
+        todayCustomer++; // Tambah customer hari ini
+
+        ShowSentencePanel(false); // Sembunyikan panel kalimat
+
+        todayState[currentCustomer.GetComponent<CustomerBehaviour>().customerState]++; // Tambah total state sesuai dengan state customer
+
+        todayScore += tempScore; // Tambahkan skor sementara ke skor hari ini
+        tempScore = 0; // Reset skor sementara
+
+        //spawn objek makanan (testing)
+        Instantiate(foodPrefabs[Random.Range(0, foodPrefabs.Count)], currentCustomer.transform.position, Quaternion.identity, currentCustomer.transform); // Spawn makanan di posisi customer
+
+        // ini cara panggil nextCustomer dengan rapih
+        StartCoroutine(DelaySpawnCustomer()); // Spawn customer berikutnya setelah delay
+    }
+
+    void ReverseMode(string inputChar)
+    {
+        if (!reverseModeUpgrade) return;
+
+        // Ambil kata saat ini jika belum ada target
+        targetWord = currWordList[currWordIndex];
+        targetReversedWord = Reverse(targetWord);
+
+        // Cek apakah input sesuai dengan urutan reversed word
+        if (typedReversedWord.Length < targetReversedWord.Length)
+        {
+            // Cek karakter per karakter
+            if (inputChar[0] == targetReversedWord[typedReversedWord.Length])
+            {
+                typedReversedWord += inputChar[0];
+                addReversedProgress++;
+
+                Debug.Log($"[Reverse Mode] progress: {typedReversedWord} vs {targetReversedWord}");
+
+                // Jika sudah selesai mengetik reversed word
+                if (typedReversedWord.Length == targetReversedWord.Length)
+                {
+                    Debug.Log($"[Reverse Mode] SELESAI: {typedReversedWord} == {targetReversedWord}");
+                    ResetPatience();
+
+                    // Update progress dan tampilan
+                    currCharInSentcIndex += addReversedProgress;
+                    if (currCharInSentcIndex >= currSentence.Length)
+                    {
+                        OrderCompleted();
+                    }
+
+                    // Reset variabel
+                    typedReversedWord = "";
+                    targetWord = "";
+                    targetReversedWord = "";
+                    addReversedProgress = 0;
+                    currCharInWordIndex = 0;
+
+                    if (currCharInSentcIndex >= currSentence.Length) return;
+                    inputText.text = currCharInSentcIndex == 0 ? $"<color=green>|</color><color=#C7C7C8>{currSentence}</color>" : $"<color=green>{currSentence.Substring(0, currCharInSentcIndex)}|</color>" + $"<color=#C7C7C8>{currSentence.Substring(currCharInSentcIndex)}</color>";
+                    // inputText.text = $"<color=green>{currSentence.Substring(0, currCharInSentcIndex)}|</color>" + $"<color=#C7C7C8>{currSentence.Substring(currCharInSentcIndex)}</color>";
+                }
+            }
+            else
+            {
+                // Reset jika salah ketik
+                if (typedReversedWord.Length > 0)
+                {
+                    Debug.Log($"[Reverse Mode] GAGAL: {typedReversedWord} vs {targetReversedWord}");
+                }
+                typedReversedWord = "";
+                addReversedProgress = 0;
+            }
+        }
+    }
+
+    public void ResetPatience()
+    {
+        timeRemaining = givenTime;
+        Debug.Log("Patience reset! Time remaining: " + timeRemaining);
+    }
+
+    public static string Reverse(string s)
+    {
+        char[] charArray = s.ToCharArray();
+        System.Array.Reverse(charArray);
+        return new string(charArray);
     }
 
     void NextCustomer()
@@ -241,10 +379,11 @@ public class MainScript : MonoBehaviour
 
         if (customerIndex < customerPrefabs.Count)
         {
-            if(currentCustomer) Destroy(currentCustomer); // Hapus customer sebelumnya
-            if(tempDayTime <= 0) GameEnd();
+            if (currentCustomer) Destroy(currentCustomer); // Hapus customer sebelumnya
+            if (tempDayTime <= 0) GameEnd();
 
-            if(tempDayTime > 0){
+            if (tempDayTime > 0)
+            {
                 givenTime = 1;
                 timeRemaining = givenTime;
 
@@ -274,8 +413,9 @@ public class MainScript : MonoBehaviour
         ShowSentencePanel(true); // atau false kalau ingin menyembunyikan
     }
 
-    IEnumerator DelaySpawnCustomer(){
-        if(currentCustomer) currentCustomer.GetComponent<CustomerBehaviour>().GetOut(); // kick pada customer sebelumnya >:3
+    IEnumerator DelaySpawnCustomer()
+    {
+        if (currentCustomer) currentCustomer.GetComponent<CustomerBehaviour>().GetOut(); // kick pada customer sebelumnya >:3
         yield return new WaitForSeconds(customerSpawnDelay);
         NextCustomer(); // Spawn customer berikutnya
     }
@@ -288,7 +428,7 @@ public class MainScript : MonoBehaviour
             bubble.gameObject.SetActive(show);
         }
         sentcPanel.GetComponent<CanvasGroup>().alpha = show ? 1f : 0f;
-        
+
         if (show)
         {
             customerAsking = true;
@@ -296,10 +436,16 @@ public class MainScript : MonoBehaviour
             sentcPanel.GetComponent<CanvasGroup>().alpha = 1f; // Tampilkan panel kalimat
             currSentence = GenerateOrder(); // Ambil kalimat dari customer berikutnya
             currSentcText.text = currSentence;
-            currCharIndex = 0;
+            currWordList = currSentence.Split(' ').ToList(); // Pisahkan kalimat menjadi kata-kata
+            currWordIndex = 0; // Reset index kata
+            currCharInSentcIndex = 0;
+            addReversedProgress = 0; // Reset jumlah karakter yang sudah ditambahkan dalam reverse mode
             inputText.text = $"<color=green>|</color><color=#C7C7C8>{currSentence}</color>"; // Reset input text
             givenTime = timeRemaining + currSentence.Length * timePerChar;
+            givenTime += givenTime * additionalPatience; // Tambahkan waktu ekstra berdasarkan tambahan kesabaran
             timeRemaining = givenTime;
+            typedReversedWord = ""; // Reset kata yang sudah diketik dalam reverse mode
+            currCharInWordIndex = 0; // Reset index karakter dalam kata yang sedang diketik
         }
         else
         {
@@ -313,8 +459,8 @@ public class MainScript : MonoBehaviour
         string count = countList[Random.Range(0, countList.Count)];
         string menu = menuList[Random.Range(0, menuList.Count)];
         string modifier = modifierList[Random.Range(0, modifierList.Count)];
-        bool extra = Random.Range(0, 100)%2 == 0; // Random true/false untuk apakah ada extra
-        bool wio = Random.Range(0, 100)%2 == 0; // Random true/false untuk with/without
+        bool extra = Random.Range(0, 100) % 2 == 0; // Random true/false untuk apakah ada extra
+        bool wio = Random.Range(0, 100) % 2 == 0; // Random true/false untuk with/without
         string wioText = wio ? "with" : "without";
         string extraText = extra ? wioText + " " + modifier : " ";
 
@@ -332,6 +478,11 @@ public class MainScript : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Melanjutkan ke hari berikutnya, reset semua variabel yang diperlukan.
+    /// Jika hari ini adalah hari upgrade, tampilkan panel upgrade.
+    /// Jika tidak, lanjutkan ke hari berikutnya.
+    /// </summary>
     public void NextDay()
     {
         // Implementasi logika untuk melanjutkan ke hari berikutnya
@@ -341,9 +492,20 @@ public class MainScript : MonoBehaviour
         gameEnd = false;
         paused = false;
 
+        if (totalDay % dayPerUpgrade == 0 && alreadySeeUpgradePanel == false)
+        {// Jika hari ini adalah hari upgrade
+            ShowUpgradePanel(true); // Tampilkan panel upgrade
+            alreadySeeUpgradePanel = true; // Tandai bahwa panel upgrade sudah ditampilkan
+            return;
+        }
+
+        alreadySeeUpgradePanel = false; // Reset tanda sudah melihat upgrade panel
+        ShowUpgradePanel(false); // Sembunyikan panel upgrade
+
         timePerChar -= timePerChar * timeReductionPerDay; // Kurangi waktu per karakter untuk meningkatkan kesulitan
         dayTime -= dayTime * 0.1f; // Kurangi waktu hari ini untuk meningkatkan kesulitan
-        if(totalDay % 3 == 0) scorePerChar++;
+        dayTime += dayTime * additionalDayTime; // Tambahkan waktu ekstra berdasarkan tambahan waktu hari
+        if (totalDay % 3 == 0) scorePerChar++;
 
         todayScore = 0; // Reset skor hari ini
         todayCustomer = 0; // Reset jumlah customer hari ini
@@ -359,6 +521,14 @@ public class MainScript : MonoBehaviour
         customerIndex = 0; // Reset index customer
         ShuffleList(customerPrefabs); // Acak ulang urutan customer
         StartCoroutine(DelaySpawnCustomer()); // Spawn customer pertama setelah delay
+    }
+
+    void ShowUpgradePanel(bool show = true)
+    {
+        if (upgradePanel != null)
+        {
+            upgradePanel.SetActive(show);
+        }
     }
 
     void GameEnd(bool isWin = true)
@@ -392,16 +562,17 @@ public class MainScript : MonoBehaviour
         }
     }
 
-    public void PauseGame(){
-        if(gameEnd) return; // Jika game sudah berakhir, tidak perlu pause
+    public void PauseGame()
+    {
+        if (gameEnd) return; // Jika game sudah berakhir, tidak perlu pause
         paused = !paused;
-        if(paused)
+        if (paused)
         {
-            pausePanel.SetActive(true); 
+            pausePanel.SetActive(true);
         }
         else
         {
-            pausePanel.SetActive(false); 
+            pausePanel.SetActive(false);
         }
     }
 
@@ -486,7 +657,189 @@ public class CustomerBehaviour : MonoBehaviour
 }
 
 [System.Serializable]
-public class CustomerData{
+public class UpgradeCardData
+{
+    public string title;
+    public string description;
+    public int cost;
+    public Sprite icon;
+}
+
+public class UpgradeCardBehaviour : MonoBehaviour
+{
+    public UpgradeCardData upgradeData;
+    private TextMeshProUGUI titleText;
+    private TextMeshProUGUI descriptionText;
+    private Image iconImage;
+
+    void Awake()
+    {
+        titleText = transform.Find("Title").GetComponent<TextMeshProUGUI>();
+        descriptionText = transform.Find("Description").GetComponent<TextMeshProUGUI>();
+        iconImage = transform.Find("Icon").GetComponent<Image>();
+    }
+    void Start()
+    {
+        if (upgradeData != null)
+        {
+            titleText.text = upgradeData.title;
+            descriptionText.text = upgradeData.description;
+            iconImage.sprite = upgradeData.icon;
+        }
+    }
+
+    public virtual void Upgrade()
+    {
+        // Implement upgrade logic here
+    }
+}
+
+public class HPUpgradeCard : UpgradeCardBehaviour
+{
+    public int healthIncrease;
+
+    public override void Upgrade()
+    {
+        MainScript mainScript = FindObjectOfType<MainScript>();
+        if (mainScript != null)
+        {
+            mainScript.hp += healthIncrease;
+            if (mainScript.hp > mainScript.maxHP)
+            {
+                mainScript.hp = mainScript.maxHP;
+            }
+            Debug.Log($"HP increased by {healthIncrease}. New HP: {mainScript.hp}");
+        }
+        else
+        {
+            Debug.LogWarning("MainScript not found!");
+        }
+    }
+}
+
+public class MorePatienceUpgradeCard : UpgradeCardBehaviour
+{
+    public float patienceIncrease;
+
+    public override void Upgrade()
+    {
+        MainScript mainScript = FindObjectOfType<MainScript>();
+        if (mainScript != null)
+        {
+            mainScript.additionalPatience += patienceIncrease;
+            Debug.Log($"Patience increased by {patienceIncrease}. New Patience: {mainScript.additionalPatience}");
+        }
+        else
+        {
+            Debug.LogWarning("MainScript not found!");
+        }
+    }
+}
+
+public class MoreDayTimeUpgradeCard : UpgradeCardBehaviour
+{
+    public float dayTimeIncrease;
+
+    public override void Upgrade()
+    {
+        MainScript mainScript = FindObjectOfType<MainScript>();
+        if (mainScript != null)
+        {
+            mainScript.additionalDayTime += dayTimeIncrease;
+            Debug.Log($"Day Time increased by {dayTimeIncrease}. New Day Time: {mainScript.additionalDayTime}");
+        }
+        else
+        {
+            Debug.LogWarning("MainScript not found!");
+        }
+    }
+}
+
+public class HealUpgradeCard : UpgradeCardBehaviour
+{
+    public int healAmount;
+
+    public override void Upgrade()
+    {
+        MainScript mainScript = FindObjectOfType<MainScript>();
+        if (mainScript != null)
+        {
+            mainScript.hp += healAmount;
+            if (mainScript.hp > mainScript.maxHP)
+            {
+                mainScript.hp = mainScript.maxHP;
+            }
+            Debug.Log($"Healed by {healAmount}. New HP: {mainScript.hp}");
+        }
+        else
+        {
+            Debug.LogWarning("MainScript not found!");
+        }
+    }
+}
+
+public class AutoCorrectUpgradeCard : UpgradeCardBehaviour
+{
+    public int autoCorrectIncrease;
+
+    public override void Upgrade()
+    {
+        MainScript mainScript = FindObjectOfType<MainScript>();
+        if (mainScript != null)
+        {
+            mainScript.autoCorrectLevel += autoCorrectIncrease;
+            if (mainScript.autoCorrectLevel > mainScript.maxAutoCorrectLevel)
+            {
+                mainScript.autoCorrectLevel = mainScript.maxAutoCorrectLevel; // Batasi level auto correct
+            }
+            mainScript.autoCorrectAvailable = mainScript.autoCorrectLevel; // Set jumlah auto correct yang tersedia sesuai level
+
+            Debug.Log($"Auto Correct Level increased by {autoCorrectIncrease}. New Auto Correct Level: {mainScript.autoCorrectLevel}");
+        }
+        else
+        {
+            Debug.LogWarning("MainScript not found!");
+        }
+    }
+}
+
+public class AutoSpaceUpgradeCard : UpgradeCardBehaviour
+{
+    public override void Upgrade()
+    {
+        MainScript mainScript = FindObjectOfType<MainScript>();
+        if (mainScript != null)
+        {
+            mainScript.autoSpaceUpgrade = true; // Aktifkan auto space
+            Debug.Log("Auto Space activated.");
+        }
+        else
+        {
+            Debug.LogWarning("MainScript not found!");
+        }
+    }
+}
+
+public class ReverseModeUpgradeCard : UpgradeCardBehaviour
+{
+    public override void Upgrade()
+    {
+        MainScript mainScript = FindObjectOfType<MainScript>();
+        if (mainScript != null)
+        {
+            mainScript.reverseModeUpgrade = true; // Aktifkan reverse mode
+            Debug.Log("Reverse Mode activated.");
+        }
+        else
+        {
+            Debug.LogWarning("MainScript not found!");
+        }
+    }
+}
+
+[System.Serializable]
+public class CustomerData
+{
     public string name;
     public Sprite customerImage;
     public CustomerData(string name, Sprite customerImage)
