@@ -4,6 +4,7 @@ using TMPro;
 using System.Linq;
 using UnityEngine.UI;
 using System.Collections;
+using Unity.VisualScripting;
 
 public class MainScript : MonoBehaviour
 {
@@ -26,8 +27,8 @@ public class MainScript : MonoBehaviour
     [SerializeField] private GameObject WinImg;
     [SerializeField] private GameObject LoseImg;
     [SerializeField] private GameObject sentcPanel;
-    [SerializeField] private TextMeshProUGUI totalScoreText;
-    [SerializeField] private TextMeshProUGUI todayScoreText;
+    [SerializeField] private TextMeshProUGUI totalCoinText;
+    [SerializeField] private TextMeshProUGUI todayCoinText;
     [SerializeField] private TextMeshProUGUI totalDayText;
     [SerializeField] private GameObject restartButton;
     [SerializeField] private GameObject nextDayButton;
@@ -41,10 +42,12 @@ public class MainScript : MonoBehaviour
     [SerializeField] private TextMeshProUGUI totalFailedOrderText;
     [SerializeField] private Image clockImage;
     [SerializeField] private GameObject upgradePanel;
+    [SerializeField] private TextMeshProUGUI coinSummaryText;
+    [SerializeField] private TextMeshProUGUI upgradeSummaryText;
     [Header("Game Summary")]
-    private int todayScore = 0;
-    private int totalScore = 0;
-    private int totalDay = 0;
+    private int todayCoin = 0;
+    public int totalCoin = 0;
+    public int totalDay = 0;
     private int totalCustomer = 0;
     private int todayCustomer = 0;
     private List<int> todayState = new List<int>();
@@ -80,6 +83,13 @@ public class MainScript : MonoBehaviour
     public float neutralThreshold = 0.25f;
     private GameObject currentCustomer;
     [SerializeField] private float customerSpawnDelay = 2f; // Delay sebelum spawn customer berikutnya
+    [Header("Upgrade Settings")]
+    public List<UpgradeCardBehaviour> upgradeCards = new List<UpgradeCardBehaviour>();
+    public List<GameObject> highlightObjects = new List<GameObject>();
+    public List<Transform> upgradeCardPositions = new List<Transform>();
+    public int selectedUpgradeIndex = -1; // Index upgrade yang dipilih
+    private int maxShownUpgradeCards = 3; // Jumlah maksimal upgrade cards yang ditampilkan
+    private List<UpgradeCardBehaviour> shownUpgradeCards = new List<UpgradeCardBehaviour>(); // Upgrade cards yang ditampilkan saat ini
     [Header("Player Upgrades")]
     public float additionalDayTime = 0f;
     public float additionalPatience = 0f;
@@ -135,6 +145,11 @@ public class MainScript : MonoBehaviour
         {
             PauseGame(); // Toggle pause state when Escape is pressed
         }
+
+        if(upgradePanel.activeSelf)
+        {
+            ShowUpgradeCardHighlight(selectedUpgradeIndex);
+        }
     }
 
     void TimerUpdate()
@@ -175,8 +190,8 @@ public class MainScript : MonoBehaviour
 
     void UIUpdate()
     {
-        totalScoreText.text = "Total Score: " + totalScore.ToString();
-        todayScoreText.text = "Score: " + todayScore.ToString();
+        totalCoinText.text = "Total Coin: " + totalCoin.ToString();
+        todayCoinText.text = "Coin: " + todayCoin.ToString();
         totalDayText.text = "Day: " + totalDay.ToString();
 
         timerImage.fillAmount = timeRemaining / givenTime; // Update fill amount dari timer
@@ -194,6 +209,14 @@ public class MainScript : MonoBehaviour
         totalFailedOrderText.text = "Total Failed Orders: " + totalFailedOrder.ToString();
 
         clockImage.fillAmount = tempDayTime / dayTime; // Update fill amount dari clockImage
+
+        if(selectedUpgradeIndex >= 0 && selectedUpgradeIndex < shownUpgradeCards.Count){
+            coinSummaryText.text = "Coin: " + totalCoin.ToString() + "-" + shownUpgradeCards[selectedUpgradeIndex].upgradeData.cost.ToString() + "=" + (totalCoin - shownUpgradeCards[selectedUpgradeIndex].upgradeData.cost).ToString();
+        }else{
+            coinSummaryText.text = "Coin: " + totalCoin.ToString();
+        }
+
+        upgradeSummaryText.text = $"Health point \t: {hp}/{maxHP}\nPatience \t\t: +{additionalPatience*100}%\nDay time \t\t: +{additionalDayTime*100}%\nAuto correct \t: {autoCorrectLevel}/{maxAutoCorrectLevel}\nAuto space \t\t: {autoSpaceUpgrade}\nReversed mode \t: {reverseModeUpgrade}";
     }
 
     void InputFromKeyboard()
@@ -294,7 +317,7 @@ public class MainScript : MonoBehaviour
 
         todayState[currentCustomer.GetComponent<CustomerBehaviour>().customerState]++; // Tambah total state sesuai dengan state customer
 
-        todayScore += tempScore; // Tambahkan skor sementara ke skor hari ini
+        todayCoin += tempScore; // Tambahkan skor sementara ke skor hari ini
         tempScore = 0; // Reset skor sementara
 
         //spawn objek makanan (testing)
@@ -498,16 +521,25 @@ public class MainScript : MonoBehaviour
             alreadySeeUpgradePanel = true; // Tandai bahwa panel upgrade sudah ditampilkan
             return;
         }
+        if(selectedUpgradeIndex >= 0 && selectedUpgradeIndex < shownUpgradeCards.Count)
+        {
+            // Terapkan upgrade yang dipilih
+            UpgradeCardData selectedUpgrade = shownUpgradeCards[selectedUpgradeIndex].upgradeData;
+            Debug.Log("Applying Upgrade: " + selectedUpgrade.title);
+
+            shownUpgradeCards[selectedUpgradeIndex].Upgrade(); // Panggil fungsi Upgrade pada upgrade card yang dipilih
+        }
 
         alreadySeeUpgradePanel = false; // Reset tanda sudah melihat upgrade panel
         ShowUpgradePanel(false); // Sembunyikan panel upgrade
+
 
         timePerChar -= timePerChar * timeReductionPerDay; // Kurangi waktu per karakter untuk meningkatkan kesulitan
         dayTime -= dayTime * 0.1f; // Kurangi waktu hari ini untuk meningkatkan kesulitan
         dayTime += dayTime * additionalDayTime; // Tambahkan waktu ekstra berdasarkan tambahan waktu hari
         if (totalDay % 3 == 0) scorePerChar++;
 
-        todayScore = 0; // Reset skor hari ini
+        todayCoin = 0; // Reset skor hari ini
         todayCustomer = 0; // Reset jumlah customer hari ini
 
         todayFailedOrder = 0; // Reset jumlah order gagal hari ini
@@ -528,6 +560,39 @@ public class MainScript : MonoBehaviour
         if (upgradePanel != null)
         {
             upgradePanel.SetActive(show);
+
+            if(show){
+                selectedUpgradeIndex = -1; // Reset index upgrade yang dipilih
+                for (int i = 0; i < maxShownUpgradeCards; i++){
+                    shownUpgradeCards.Add(upgradeCards[Random.Range(0, upgradeCards.Count)]); // Inisialisasi list upgrade cards yang ditampilkan
+
+                    shownUpgradeCards[i] = Instantiate(shownUpgradeCards[i], upgradeCardPositions[i].position, Quaternion.identity, upgradePanel.transform); // Spawn upgrade card di posisi yang sesuai
+                    shownUpgradeCards[i].upgradeData.shownIndex = i; // Set index untuk upgrade card yang ditampilkan
+                }
+            }else{
+                // Hapus semua upgrade cards yang ditampilkan
+                foreach (var card in shownUpgradeCards)
+                {
+                    Destroy(card.gameObject);
+                }
+                selectedUpgradeIndex = -1; // Reset index upgrade yang dipilih
+                shownUpgradeCards.Clear(); // Kosongkan list upgrade cards yang ditampilkan
+            }
+        }
+    }
+
+    void ShowUpgradeCardHighlight(int index){
+        if (index < 0 || index >= shownUpgradeCards.Count){
+            for (int i = 0; i < highlightObjects.Count; i++)
+            {
+                highlightObjects[i].SetActive(false); // Sembunyikan semua highlight objects
+            }
+            Debug.LogWarning("Index out of range for upgrade cards highlight.");
+        }else{
+            for (int i = 0; i < highlightObjects.Count; i++)
+            {
+                highlightObjects[i].SetActive(i == index); // Tampilkan highlight object sesuai dengan index yang dipilih
+            }
         }
     }
 
@@ -537,7 +602,7 @@ public class MainScript : MonoBehaviour
         paused = true; // Set game to paused state
         gameEnd = true; // Set game end state
 
-        totalScore += todayScore; // Tambah total skor meskipun kalah
+        totalCoin += todayCoin; // Tambah total skor meskipun kalah
         totalCustomer += todayCustomer; // Tambah total customer meskipun kalah
         totalFailedOrder += todayFailedOrder; // Tambah total order gagal
 
@@ -663,6 +728,7 @@ public class UpgradeCardData
     public string description;
     public int cost;
     public Sprite icon;
+    public int shownIndex; // Index untuk menampilkan upgrade card di UI
 }
 
 public class UpgradeCardBehaviour : MonoBehaviour
@@ -670,13 +736,19 @@ public class UpgradeCardBehaviour : MonoBehaviour
     public UpgradeCardData upgradeData;
     private TextMeshProUGUI titleText;
     private TextMeshProUGUI descriptionText;
+    private TextMeshProUGUI costText;
     private Image iconImage;
+    private MainScript mainScript;
 
     void Awake()
     {
-        titleText = transform.Find("Title").GetComponent<TextMeshProUGUI>();
-        descriptionText = transform.Find("Description").GetComponent<TextMeshProUGUI>();
-        iconImage = transform.Find("Icon").GetComponent<Image>();
+        titleText = transform.Find("Title Text").GetComponent<TextMeshProUGUI>();
+        descriptionText = transform.Find("Desc Text").GetComponent<TextMeshProUGUI>();
+        iconImage = transform.Find("IconPanel").transform.Find("Image").GetComponent<Image>();
+        costText = transform.Find("Cost").GetComponent<TextMeshProUGUI>();
+        mainScript = FindObjectOfType<MainScript>();
+        transform.AddComponent<Button>().onClick.AddListener(Select); // Tambahkan listener untuk klik pada upgrade card
+        transform.GetComponent<Button>().navigation = new Navigation{mode = Navigation.Mode.None}; // Nonaktifkan navigasi tombol
     }
     void Start()
     {
@@ -685,155 +757,25 @@ public class UpgradeCardBehaviour : MonoBehaviour
             titleText.text = upgradeData.title;
             descriptionText.text = upgradeData.description;
             iconImage.sprite = upgradeData.icon;
+            costText.text = "Cost: " + (upgradeData.cost += Mathf.FloorToInt(upgradeData.cost * mainScript.totalDay * 0.1f)).ToString();
+        }
+    }
+
+    public void Select(){
+        if(mainScript){
+            if(mainScript.selectedUpgradeIndex == upgradeData.shownIndex){
+                mainScript.selectedUpgradeIndex = -1; // Deselect jika sudah dipilih
+            }else{
+                mainScript.selectedUpgradeIndex = upgradeData.shownIndex; // Set index upgrade yang dipilih
+                Debug.Log("Selected Upgrade: " + upgradeData.title + " at index " + upgradeData.shownIndex);
+            }
         }
     }
 
     public virtual void Upgrade()
     {
         // Implement upgrade logic here
-    }
-}
-
-public class HPUpgradeCard : UpgradeCardBehaviour
-{
-    public int healthIncrease;
-
-    public override void Upgrade()
-    {
-        MainScript mainScript = FindObjectOfType<MainScript>();
-        if (mainScript != null)
-        {
-            mainScript.hp += healthIncrease;
-            if (mainScript.hp > mainScript.maxHP)
-            {
-                mainScript.hp = mainScript.maxHP;
-            }
-            Debug.Log($"HP increased by {healthIncrease}. New HP: {mainScript.hp}");
-        }
-        else
-        {
-            Debug.LogWarning("MainScript not found!");
-        }
-    }
-}
-
-public class MorePatienceUpgradeCard : UpgradeCardBehaviour
-{
-    public float patienceIncrease;
-
-    public override void Upgrade()
-    {
-        MainScript mainScript = FindObjectOfType<MainScript>();
-        if (mainScript != null)
-        {
-            mainScript.additionalPatience += patienceIncrease;
-            Debug.Log($"Patience increased by {patienceIncrease}. New Patience: {mainScript.additionalPatience}");
-        }
-        else
-        {
-            Debug.LogWarning("MainScript not found!");
-        }
-    }
-}
-
-public class MoreDayTimeUpgradeCard : UpgradeCardBehaviour
-{
-    public float dayTimeIncrease;
-
-    public override void Upgrade()
-    {
-        MainScript mainScript = FindObjectOfType<MainScript>();
-        if (mainScript != null)
-        {
-            mainScript.additionalDayTime += dayTimeIncrease;
-            Debug.Log($"Day Time increased by {dayTimeIncrease}. New Day Time: {mainScript.additionalDayTime}");
-        }
-        else
-        {
-            Debug.LogWarning("MainScript not found!");
-        }
-    }
-}
-
-public class HealUpgradeCard : UpgradeCardBehaviour
-{
-    public int healAmount;
-
-    public override void Upgrade()
-    {
-        MainScript mainScript = FindObjectOfType<MainScript>();
-        if (mainScript != null)
-        {
-            mainScript.hp += healAmount;
-            if (mainScript.hp > mainScript.maxHP)
-            {
-                mainScript.hp = mainScript.maxHP;
-            }
-            Debug.Log($"Healed by {healAmount}. New HP: {mainScript.hp}");
-        }
-        else
-        {
-            Debug.LogWarning("MainScript not found!");
-        }
-    }
-}
-
-public class AutoCorrectUpgradeCard : UpgradeCardBehaviour
-{
-    public int autoCorrectIncrease;
-
-    public override void Upgrade()
-    {
-        MainScript mainScript = FindObjectOfType<MainScript>();
-        if (mainScript != null)
-        {
-            mainScript.autoCorrectLevel += autoCorrectIncrease;
-            if (mainScript.autoCorrectLevel > mainScript.maxAutoCorrectLevel)
-            {
-                mainScript.autoCorrectLevel = mainScript.maxAutoCorrectLevel; // Batasi level auto correct
-            }
-            mainScript.autoCorrectAvailable = mainScript.autoCorrectLevel; // Set jumlah auto correct yang tersedia sesuai level
-
-            Debug.Log($"Auto Correct Level increased by {autoCorrectIncrease}. New Auto Correct Level: {mainScript.autoCorrectLevel}");
-        }
-        else
-        {
-            Debug.LogWarning("MainScript not found!");
-        }
-    }
-}
-
-public class AutoSpaceUpgradeCard : UpgradeCardBehaviour
-{
-    public override void Upgrade()
-    {
-        MainScript mainScript = FindObjectOfType<MainScript>();
-        if (mainScript != null)
-        {
-            mainScript.autoSpaceUpgrade = true; // Aktifkan auto space
-            Debug.Log("Auto Space activated.");
-        }
-        else
-        {
-            Debug.LogWarning("MainScript not found!");
-        }
-    }
-}
-
-public class ReverseModeUpgradeCard : UpgradeCardBehaviour
-{
-    public override void Upgrade()
-    {
-        MainScript mainScript = FindObjectOfType<MainScript>();
-        if (mainScript != null)
-        {
-            mainScript.reverseModeUpgrade = true; // Aktifkan reverse mode
-            Debug.Log("Reverse Mode activated.");
-        }
-        else
-        {
-            Debug.LogWarning("MainScript not found!");
-        }
+        mainScript.totalCoin -= upgradeData.cost; // Kurangi total coin sesuai dengan cost upgrade
     }
 }
 

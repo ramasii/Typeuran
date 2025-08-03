@@ -119,6 +119,22 @@ MonoBehaviour:
   happyThreshold: 0.55
   neutralThreshold: 0.2
   customerSpawnDelay: 3
+  upgradeCards:
+  - {fileID: 84393463654252940, guid: 7d128e1bf7715184fa0f03fb1dc2e5f9, type: 3}
+  - {fileID: 4104734611479266613, guid: ff4365a2c5739d745bb3a73f13fe4012, type: 3}
+  - {fileID: 7897198116773294863, guid: c3e9d4d969d149c4aad653911c5cce70, type: 3}
+  - {fileID: 5012845747026951116, guid: d558f040e77035f4596747a0f1097ccb, type: 3}
+  - {fileID: 7120152449086542714, guid: 1aa655de28252e541b525291dc96fa6f, type: 3}
+  - {fileID: 4584543994125030998, guid: 0833a0b037f5e42409c90ce2d04b59d8, type: 3}
+  highlightObjects:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  upgradeCardPositions:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  selectedUpgradeIndex: -1
   additionalDayTime: 0
   additionalPatience: 0
   autoCorrectLevel: 0
