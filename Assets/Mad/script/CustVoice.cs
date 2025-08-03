@@ -22,7 +22,7 @@ public class CustVoice : MonoBehaviour
     public void PlayAngryVoice()
     {
         if (voiceOnAngry != null)
-            audioSource.volume = 0.3f;
-            audioSource.PlayOneShot(voiceOnAngry);
+        audioSource.PlayOneShot(voiceOnAngry);
     }
+
 }

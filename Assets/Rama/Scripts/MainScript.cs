@@ -151,7 +151,7 @@ public class MainScript : MonoBehaviour
             ShowUpgradeCardHighlight(selectedUpgradeIndex);
         }
     }
-
+    private bool hasPlayedAngryVoice = false;
     void TimerUpdate()
     {
         if (paused || customerAsking == false) return; // jika game sedang pause atau ga ada customer, tidak perlu update timer
@@ -164,10 +164,26 @@ public class MainScript : MonoBehaviour
         if (timeRemaining > 0)
         {
             timeRemaining -= Time.deltaTime;
+            if (hp > 1)
+            {
+              if (!hasPlayedAngryVoice && timeRemaining <= givenTime * neutralThreshold)
+            {
+                hasPlayedAngryVoice = true; // agar tidak diputar berulang
+                CustVoice voice = currentCustomer.GetComponent<CustVoice>();
+                if (voice != null)
+                {
+                    voice.PlayAngryVoice();
+                }
+            }  
+            }
+            
         }
         else // waktu habis maka kasih penalty atau bahkan gagal
         {
-            AudioManager.Instance.PlaySFX(AudioManager.Instance.failSFX);
+            if (hp > 1)
+            {
+                 AudioManager.Instance.PlaySFX(AudioManager.Instance.failSFX);
+            }
             hp--; // Kurangi HP
             ShowSentencePanel(false); // Sembunyikan panel kalimat
             currCharInSentcIndex = 0; // Reset index karakter
@@ -183,6 +199,7 @@ public class MainScript : MonoBehaviour
             }
             else
             {
+                AudioManager.Instance.PlaySFX(AudioManager.Instance.stempSFX);
                 GameEnd(false); // Panggil fungsi GameEnd dengan isWin = false
             }
         }
@@ -296,6 +313,7 @@ public class MainScript : MonoBehaviour
                         }
                         else
                         {
+                            AudioManager.Instance.PlayWrongSFX();
                             Debug.Log("huruf salah");
                             inputText.text = $"<color=green>{currSentence.Substring(0, currCharInSentcIndex)}|</color>" + $"<color=red>{currSentence[currCharInSentcIndex]}</color>" + $"<color=#C7C7C8>{currSentence.Substring(currCharInSentcIndex+1)}</color>";
 
@@ -401,6 +419,7 @@ public class MainScript : MonoBehaviour
 
     void NextCustomer()
     {
+        hasPlayedAngryVoice = false;
 
         if (customerIndex < customerPrefabs.Count)
         {
@@ -414,6 +433,9 @@ public class MainScript : MonoBehaviour
 
                 currentCustomer = Instantiate(customerPrefabs[customerIndex], CustomerSpawnPoint.position, Quaternion.identity); // Spawn customer berikutnya
                 StartCoroutine(PlayCustomerArrivesWithDelay(1f));
+                CustVoice voice = currentCustomer.GetComponent<CustVoice>();
+                if (voice != null) StartCoroutine(PlayVoiceOnArriveWithDelay(voice, 2f));
+
                 currentCustomer.AddComponent<CustomerBehaviour>().GetIn(); // Tambahkan komponen CustomerBehaviour dan masukkan (apanya? 🤨)
 
                 customerIndex++;
@@ -431,6 +453,12 @@ public class MainScript : MonoBehaviour
         yield return new WaitForSeconds(delay);
         AudioManager.Instance.PlayCustomerArrivesSFX();
     }
+    IEnumerator PlayVoiceOnArriveWithDelay(CustVoice voice, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        voice.PlayArrivalVoice();
+    }
+
 
     IEnumerator DelayShowSentencePanel()
     {

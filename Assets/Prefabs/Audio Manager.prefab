@@ -315,8 +315,10 @@ MonoBehaviour:
   - {fileID: 8300000, guid: d3c34a398577ff748a94d17ab3e4a712, type: 3}
   - {fileID: 8300000, guid: 4c9f7fb28c86ceb47828dfa04d6e6683, type: 3}
   spacebarSFX: {fileID: 8300000, guid: d8e542c17b2dcb640b935785b6e457a1, type: 3}
+  wrongSFX: {fileID: 8300000, guid: 9d86223e8ce100e48a9cc2729279ca08, type: 3}
   successSFX: {fileID: 8300000, guid: 8becd17e1f4b6574fbf57f5f1d4b6385, type: 3}
   failSFX: {fileID: 8300000, guid: 07708a610e5505445bf8bb505287225e, type: 3}
+  stempSFX: {fileID: 8300000, guid: 9f79fd14d4a1a224b8c5cd8e89954d7e, type: 3}
   customerArrivesSFX: {fileID: 8300000, guid: 5c7961c9b86b4ca419b3e2172e154ba7, type: 3}
   dayAlmostEndedSFX: {fileID: 8300000, guid: 12647c67bc3519b49b3b87c2ae19faf5, type: 3}
   buttonClickSFX: {fileID: 8300000, guid: 311328090720c8f41ba333507284a8dd, type: 3}
