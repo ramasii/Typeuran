@@ -44,6 +44,7 @@ public class MainScript : MonoBehaviour
     [SerializeField] private GameObject upgradePanel;
     [SerializeField] private TextMeshProUGUI coinSummaryText;
     [SerializeField] private TextMeshProUGUI upgradeSummaryText;
+    [SerializeField] private TextMeshProUGUI reverseProgressText;
     [Header("Game Summary")]
     private int todayCoin = 0;
     public int totalCoin = 0;
@@ -234,6 +235,8 @@ public class MainScript : MonoBehaviour
         }
 
         upgradeSummaryText.text = $"Health point \t: {hp}/{maxHP}\nPatience \t\t: +{additionalPatience*100}%\nDay time \t\t: +{additionalDayTime*100}%\nAuto correct \t: {autoCorrectLevel}/{maxAutoCorrectLevel}\nAuto space \t\t: {autoSpaceUpgrade}\nReversed mode \t: {reverseModeUpgrade}";
+
+        reverseProgressText.text = typedReversedWord;
     }
 
     void InputFromKeyboard()
@@ -389,7 +392,11 @@ public class MainScript : MonoBehaviour
                     currCharInWordIndex = 0;
 
                     if (currCharInSentcIndex >= currSentence.Length) return;
-                    inputText.text = currCharInSentcIndex == 0 ? $"<color=green>|</color><color=#C7C7C8>{currSentence}</color>" : $"<color=green>{currSentence.Substring(0, currCharInSentcIndex)}|</color>" + $"<color=#C7C7C8>{currSentence.Substring(currCharInSentcIndex)}</color>";
+                    if(customerAsking){
+                        inputText.text = currCharInSentcIndex == 0 ? $"<color=green>|</color><color=#C7C7C8>{currSentence}</color>" : $"<color=green>{currSentence.Substring(0, currCharInSentcIndex)}|</color>" + $"<color=#C7C7C8>{currSentence.Substring(currCharInSentcIndex)}</color>";
+                    }else{
+                        inputText.text = "";
+                    }
                     // inputText.text = $"<color=green>{currSentence.Substring(0, currCharInSentcIndex)}|</color>" + $"<color=#C7C7C8>{currSentence.Substring(currCharInSentcIndex)}</color>";
                 }
             }
