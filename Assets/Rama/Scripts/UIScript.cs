@@ -14,7 +14,11 @@ public class UIScript : MonoBehaviour
     private void UIStarting()
     {
         startButton = GameObject.Find("Start Button");
-        firedStamp = transform.Find("GameEndPanel").transform.Find("Fired Letter").transform.Find("FiredStamp").gameObject;
+        Transform temp = transform.Find("GameEndPanel");
+        if (temp != null){
+            firedStamp = temp.Find("Fired Letter").transform.Find("FiredStamp").gameObject;
+            Debug.Log("Fired Stamp found: " + (firedStamp != null));
+        }
         if (startButton != null) startButton.AddComponent<StartButton>();
     }
 
