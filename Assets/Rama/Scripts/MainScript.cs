@@ -228,9 +228,9 @@ public class MainScript : MonoBehaviour
         clockImage.fillAmount = tempDayTime / dayTime; // Update fill amount dari clockImage
 
         if(selectedUpgradeIndex >= 0 && selectedUpgradeIndex < shownUpgradeCards.Count){
-            coinSummaryText.text = "Coin: " + totalCoin.ToString() + "-" + shownUpgradeCards[selectedUpgradeIndex].upgradeData.cost.ToString() + "=" + (totalCoin - shownUpgradeCards[selectedUpgradeIndex].upgradeData.cost).ToString();
+            coinSummaryText.text = ": " + totalCoin.ToString() + "-" + shownUpgradeCards[selectedUpgradeIndex].upgradeData.cost.ToString() + "=" + ( totalCoin - shownUpgradeCards[selectedUpgradeIndex].upgradeData.cost < 0 ? $"<color=red>{totalCoin - shownUpgradeCards[selectedUpgradeIndex].upgradeData.cost}</color>" : (totalCoin - shownUpgradeCards[selectedUpgradeIndex].upgradeData.cost).ToString());
         }else{
-            coinSummaryText.text = "Coin: " + totalCoin.ToString();
+            coinSummaryText.text = ": " + totalCoin.ToString();
         }
 
         upgradeSummaryText.text = $"Health point \t: {hp}/{maxHP}\nPatience \t\t: +{additionalPatience*100}%\nDay time \t\t: +{additionalDayTime*100}%\nAuto correct \t: {autoCorrectLevel}/{maxAutoCorrectLevel}\nAuto space \t\t: {autoSpaceUpgrade}\nReversed mode \t: {reverseModeUpgrade}";
@@ -251,6 +251,8 @@ public class MainScript : MonoBehaviour
             {
                 if (currCharInSentcIndex < currSentence.Length)
                 {
+                    if(paused || customerAsking == false) return; // jika game sedang pause atau ga ada customer, tidak perlu input
+                    
                     if (inputChar[0] == currSentence[currCharInSentcIndex])
                     {
                         if (inputChar[0] == ' ')
@@ -556,9 +558,16 @@ public class MainScript : MonoBehaviour
         {
             // Terapkan upgrade yang dipilih
             UpgradeCardData selectedUpgrade = shownUpgradeCards[selectedUpgradeIndex].upgradeData;
-            Debug.Log("Applying Upgrade: " + selectedUpgrade.title);
-
-            shownUpgradeCards[selectedUpgradeIndex].Upgrade(); // Panggil fungsi Upgrade pada upgrade card yang dipilih
+            
+            if(totalCoin >= selectedUpgrade.cost){
+                Debug.Log("Applying Upgrade: " + selectedUpgrade.title);
+                shownUpgradeCards[selectedUpgradeIndex].Upgrade(); // Panggil fungsi Upgrade pada upgrade card yang dipilih
+            }else{
+                Debug.LogWarning("Not enough coins for upgrade: " + selectedUpgrade.title);
+                // Jika tidak cukup koin, reset selectedUpgradeIndex
+                selectedUpgradeIndex = -1; // Reset index upgrade yang dipilih
+                return; // Keluar dari fungsi
+            }
         }
 
         alreadySeeUpgradePanel = false; // Reset tanda sudah melihat upgrade panel

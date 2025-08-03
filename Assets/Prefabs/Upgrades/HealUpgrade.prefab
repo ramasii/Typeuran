@@ -96,7 +96,7 @@ MonoBehaviour:
     title: One More Chance, Please!
     description: '"I swear I''ll get better" <b>Increase health point by 1</b> '
     cost: 100
-    icon: {fileID: 21300000, guid: 4f40d29e5d3378f42930617b3e4c924b, type: 3}
+    icon: {fileID: 21300000, guid: 3d7028545e88834459f8c8924729953a, type: 3}
     shownIndex: 0
   healAmount: 1
 --- !u!1 &5709628537713849542
@@ -426,7 +426,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.8196079, g: 0.79215693, b: 0.75294125, a: 1}
+  m_Color: {r: 0.8784314, g: 0.8509804, b: 0.80784315, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -470,14 +470,14 @@ RectTransform:
   m_GameObject: {fileID: 7717767723523339271}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.45, y: 1.45, z: 1.45}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 8067678406971623726}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 22.39, y: 0}
   m_SizeDelta: {x: 311.35, y: 314.34}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6751063112512568028
@@ -508,7 +508,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 4f40d29e5d3378f42930617b3e4c924b, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 3d7028545e88834459f8c8924729953a, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1

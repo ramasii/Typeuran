@@ -59,7 +59,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.8196079, g: 0.79215693, b: 0.75294125, a: 1}
+  m_Color: {r: 0.879, g: 0.850759, b: 0.8083976, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -440,8 +440,9 @@ MonoBehaviour:
     title: You See Nothing
     description: '"It''s not a mistake if no one knows it" <b>Ignore one typo</b>
       that was made in each word (Player can only have two of this upgrade)'
-    cost: 200
-    icon: {fileID: 21300000, guid: 4f40d29e5d3378f42930617b3e4c924b, type: 3}
+    cost: 230
+    icon: {fileID: 21300000, guid: d3a49321b6af21f4b87cf03557b51345, type: 3}
+    shownIndex: 0
   autoCorrectIncrease: 1
 --- !u!1 &8530392917250968085
 GameObject:
@@ -470,7 +471,7 @@ RectTransform:
   m_GameObject: {fileID: 8530392917250968085}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.45, y: 1.45, z: 1.45}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 402942772612405201}
@@ -508,7 +509,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 4f40d29e5d3378f42930617b3e4c924b, type: 3}
+  m_Sprite: {fileID: 21300000, guid: d3a49321b6af21f4b87cf03557b51345, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
