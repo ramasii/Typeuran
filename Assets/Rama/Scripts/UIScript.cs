@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 public class UIScript : MonoBehaviour
 {
     private GameObject startButton;
+    private GameObject firedStamp;
     // Start is called before the first frame update
     void Start()
     {
@@ -13,13 +14,20 @@ public class UIScript : MonoBehaviour
     private void UIStarting()
     {
         startButton = GameObject.Find("Start Button");
+        firedStamp = transform.Find("GameEndPanel").transform.Find("Fired Letter").transform.Find("FiredStamp").gameObject;
         if (startButton != null) startButton.AddComponent<StartButton>();
     }
 
     // Update is called once per frame
     void Update()
     {
-
+        // update animasi firedStamp jika game sedang pause
+        if(Time.timeScale == 0f && firedStamp != null){
+            if(firedStamp.TryGetComponent<Animator>(out var a))
+            {
+                a.Update(Time.unscaledDeltaTime);
+            }
+        }
     }
 
     public void GoToScene(string sceneName)

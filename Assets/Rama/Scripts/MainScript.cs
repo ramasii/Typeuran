@@ -150,6 +150,8 @@ public class MainScript : MonoBehaviour
         {
             ShowUpgradeCardHighlight(selectedUpgradeIndex);
         }
+
+        Time.timeScale = paused ? 0f : 1f; // Set waktu game sesuai dengan kondisi pause
     }
 
     void TimerUpdate()
@@ -297,6 +299,8 @@ public class MainScript : MonoBehaviour
                         else
                         {
                             Debug.Log("huruf salah");
+                            inputText.text = $"<color=green>{currSentence.Substring(0, currCharInSentcIndex)}|</color>" + $"<color=red>{currSentence[currCharInSentcIndex]}</color>" + $"<color=#C7C7C8>{currSentence.Substring(currCharInSentcIndex+1)}</color>";
+
                         }
                     }
                 }
@@ -608,9 +612,9 @@ public class MainScript : MonoBehaviour
 
         // Implement game over logic here, such as showing a UI panel or restarting the game
         gameOverPanel.SetActive(true);
-        AudioManager.Instance.PlayDayAlmostEndedSFX();
         if (isWin)
         {
+            AudioManager.Instance.PlayDayAlmostEndedSFX();
             totalDay++; // Tambah hari
 
             WinImg.SetActive(true);
