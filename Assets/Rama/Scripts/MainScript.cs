@@ -150,8 +150,6 @@ public class MainScript : MonoBehaviour
         {
             ShowUpgradeCardHighlight(selectedUpgradeIndex);
         }
-
-        Time.timeScale = paused ? 0f : 1f; // Set waktu game sesuai dengan kondisi pause
     }
 
     void TimerUpdate()
@@ -518,6 +516,7 @@ public class MainScript : MonoBehaviour
 
         gameEnd = false;
         paused = false;
+        Time.timeScale = paused ? 0f : 1f; // Set waktu game sesuai dengan kondisi pause
 
         if (totalDay % dayPerUpgrade == 0 && alreadySeeUpgradePanel == false)
         {// Jika hari ini adalah hari upgrade
@@ -604,6 +603,7 @@ public class MainScript : MonoBehaviour
     {
         Debug.Log("Game Over! You have completed all sentences.");
         paused = true; // Set game to paused state
+        Time.timeScale = paused ? 0f : 1f; // Set waktu game sesuai dengan kondisi pause
         gameEnd = true; // Set game end state
 
         totalCoin += todayCoin; // Tambah total skor meskipun kalah
@@ -635,6 +635,7 @@ public class MainScript : MonoBehaviour
     {
         if (gameEnd) return; // Jika game sudah berakhir, tidak perlu pause
         paused = !paused;
+        Time.timeScale = paused ? 0f : 1f; // Set waktu game sesuai dengan kondisi pause
         if (paused)
         {
             pausePanel.SetActive(true);

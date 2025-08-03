@@ -14,6 +14,8 @@ public class UIScript : MonoBehaviour
     private void UIStarting()
     {
         startButton = GameObject.Find("Start Button");
+
+        firedStamp = null;
         Transform temp = transform.Find("GameEndPanel");
         if (temp != null){
             firedStamp = temp.Find("Fired Letter").transform.Find("FiredStamp").gameObject;
@@ -29,13 +31,16 @@ public class UIScript : MonoBehaviour
         if(Time.timeScale == 0f && firedStamp != null){
             if(firedStamp.TryGetComponent<Animator>(out var a))
             {
-                a.Update(Time.unscaledDeltaTime);
+                if(firedStamp.activeInHierarchy){
+                    a.Update(Time.unscaledDeltaTime);
+                }
             }
         }
     }
 
     public void GoToScene(string sceneName)
     {
+        Time.timeScale = 1f; // Reset time scale before changing scene
         SceneManager.LoadScene(sceneName);
     }
 
