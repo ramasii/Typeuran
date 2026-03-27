@@ -95,7 +95,7 @@ MonoBehaviour:
   upgradeData:
     title: One More Chance, Please!
     description: '"I swear I''ll get better" <b>Increase health point by 1</b> '
-    cost: 100
+    cost: 90
     icon: {fileID: 21300000, guid: 3d7028545e88834459f8c8924729953a, type: 3}
     shownIndex: 0
   healAmount: 1

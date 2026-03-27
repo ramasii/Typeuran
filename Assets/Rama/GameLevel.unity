@@ -744,6 +744,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1287726837}
     - target: {fileID: 1328089480033275847, guid: 112b99663903dca41a4976fb8e0523b4, type: 3}
+      propertyPath: dayTime
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 1328089480033275847, guid: 112b99663903dca41a4976fb8e0523b4, type: 3}
       propertyPath: inputText
       value: 
       objectReference: {fileID: 894143389}
@@ -763,6 +767,10 @@ PrefabInstance:
       propertyPath: timerImage
       value: 
       objectReference: {fileID: 1275136372}
+    - target: {fileID: 1328089480033275847, guid: 112b99663903dca41a4976fb8e0523b4, type: 3}
+      propertyPath: timePerChar
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1328089480033275847, guid: 112b99663903dca41a4976fb8e0523b4, type: 3}
       propertyPath: totalDayText
       value: 
@@ -839,6 +847,10 @@ PrefabInstance:
       propertyPath: reverseProgressText
       value: 
       objectReference: {fileID: 986900686}
+    - target: {fileID: 1328089480033275847, guid: 112b99663903dca41a4976fb8e0523b4, type: 3}
+      propertyPath: timeReductionPerDay
+      value: 0.04
+      objectReference: {fileID: 0}
     - target: {fileID: 1328089480033275847, guid: 112b99663903dca41a4976fb8e0523b4, type: 3}
       propertyPath: todayFailedOrderText
       value: 

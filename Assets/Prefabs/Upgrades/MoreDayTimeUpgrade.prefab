@@ -247,7 +247,7 @@ MonoBehaviour:
     title: Longer Day
     description: '"Boss said I''ll get paid more" <b>The days getting longer by +20%</b>,
       increasing the chance to gain more coins from customers '
-    cost: 150
+    cost: 230
     icon: {fileID: 21300000, guid: 2609afe6c83aa9142a825fe0894c3835, type: 3}
     shownIndex: 0
   dayTimeIncrease: 0.2

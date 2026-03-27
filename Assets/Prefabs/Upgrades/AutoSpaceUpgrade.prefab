@@ -440,7 +440,7 @@ MonoBehaviour:
     title: Auto Space
     description: '"A little help never hurts" Activate an <b>automatic space after
       each word</b> only if the last letter is correct.'
-    cost: 200
+    cost: 160
     icon: {fileID: 21300000, guid: 0b472a1f863fe814ca8b16ffd30c9098, type: 3}
     shownIndex: 0
 --- !u!1 &7688582327416653360

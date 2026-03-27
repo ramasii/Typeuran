@@ -574,7 +574,7 @@ MonoBehaviour:
     title: Howdy, Folks!
     description: '"The weather is nice, isn''t it?" <b>Every customer comes with
       +30% happiness</b> '
-    cost: 100
+    cost: 220
     icon: {fileID: 21300000, guid: c3a0cd71b05d7db41b87624b0a295776, type: 3}
     shownIndex: 0
   patienceIncrease: 0.3

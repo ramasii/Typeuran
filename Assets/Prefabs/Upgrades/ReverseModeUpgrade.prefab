@@ -652,6 +652,6 @@ MonoBehaviour:
     description: "\"Up for a challenge?\" <b>Write a word in reverse to reset customer's
       happiness.</b> Ex: burger > regrub. If player failed at the middle of reversing
       a word, player can try to reverse the word again or continue to type the\_original\_word."
-    cost: 300
+    cost: 240
     icon: {fileID: 21300000, guid: 5e7f4a22a9467d344be14bfc88097149, type: 3}
     shownIndex: 0

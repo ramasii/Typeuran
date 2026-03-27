@@ -440,7 +440,7 @@ MonoBehaviour:
     title: You See Nothing
     description: '"It''s not a mistake if no one knows it" <b>Ignore one typo</b>
       that was made in each word (Player can only have two of this upgrade)'
-    cost: 230
+    cost: 190
     icon: {fileID: 21300000, guid: d3a49321b6af21f4b87cf03557b51345, type: 3}
     shownIndex: 0
   autoCorrectIncrease: 1

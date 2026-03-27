@@ -582,7 +582,7 @@ public class MainScript : MonoBehaviour
 
 
         timePerChar -= timePerChar * timeReductionPerDay; // Kurangi waktu per karakter untuk meningkatkan kesulitan
-        dayTime -= dayTime * 0.1f; // Kurangi waktu hari ini untuk meningkatkan kesulitan
+        // dayTime -= dayTime * 0.1f; // Kurangi waktu hari ini untuk meningkatkan kesulitan
         dayTime += dayTime * additionalDayTime; // Tambahkan waktu ekstra berdasarkan tambahan waktu hari
         if (totalDay % 3 == 0) scorePerChar++;
 
