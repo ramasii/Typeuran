@@ -234,7 +234,7 @@ public class MainScript : MonoBehaviour
             coinSummaryText.text = ": " + totalCoin.ToString();
         }
 
-        upgradeSummaryText.text = $"Health point \t: {hp}/{maxHP}\nPatience \t\t: +{additionalPatience*100}%\nDay time \t\t: +{additionalDayTime*100}%\nAuto correct \t: {autoCorrectLevel}/{maxAutoCorrectLevel}\nAuto space \t\t: {autoSpaceUpgrade}\nReversed mode \t: {reverseModeUpgrade}";
+        upgradeSummaryText.text = $"Health point \t: {hp}/{maxHP}\nPatience \t\t: +{additionalPatience*100}%\nDay time \t\t: -{additionalDayTime*100}%\nAuto correct \t: {autoCorrectLevel}/{maxAutoCorrectLevel}\nAuto space \t\t: {autoSpaceUpgrade}\nReversed mode \t: {reverseModeUpgrade}";
 
         reverseProgressText.text = typedReversedWord;
     }
@@ -583,7 +583,8 @@ public class MainScript : MonoBehaviour
 
         timePerChar -= timePerChar * timeReductionPerDay; // Kurangi waktu per karakter untuk meningkatkan kesulitan
         // dayTime -= dayTime * 0.1f; // Kurangi waktu hari ini untuk meningkatkan kesulitan
-        dayTime += dayTime * additionalDayTime; // Tambahkan waktu ekstra berdasarkan tambahan waktu hari
+        // dayTime += dayTime * additionalDayTime; // Tambahkan waktu ekstra berdasarkan tambahan waktu hari
+        dayTime -= dayTime * additionalDayTime; // Tambahkan waktu ekstra berdasarkan tambahan waktu hari
         if (totalDay % 3 == 0) scorePerChar++;
 
         todayCoin = 0; // Reset skor hari ini
