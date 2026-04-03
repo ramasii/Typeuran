@@ -784,6 +784,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 156376893}
     - target: {fileID: 1328089480033275847, guid: 112b99663903dca41a4976fb8e0523b4, type: 3}
+      propertyPath: dayPerUpgrade
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1328089480033275847, guid: 112b99663903dca41a4976fb8e0523b4, type: 3}
       propertyPath: gameOverPanel
       value: 
       objectReference: {fileID: 1926720277}
